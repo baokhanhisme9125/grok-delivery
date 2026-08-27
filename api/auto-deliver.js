@@ -79,10 +79,16 @@ module.exports = async (req, res) => {
     let errors = 0;
     let outOfStock = false;
 
+    // Debug: show first sale structure
+    const sampleSale = sales[0] ? {
+      keys: Object.keys(sales[0]),
+      data: sales[0],
+    } : null;
+
     for (const sale of sales) {
-      const uniqueCode = sale.unique_code || '';
-      const orderId = String(sale.inv || sale.id_invoice || '');
-      const buyerEmail = sale.email || '';
+      const uniqueCode = sale.unique_code || sale.uniquecode || sale.code || '';
+      const orderId = String(sale.inv || sale.id_invoice || sale.order_id || sale.id || '');
+      const buyerEmail = sale.email || sale.buyer_email || '';
 
       if (!uniqueCode) {
         skipped++;
@@ -146,6 +152,7 @@ module.exports = async (req, res) => {
 
     return res.status(200).json({
       success: true,
+      sampleSale,
       summary: {
         totalSales: sales.length,
         delivered,
