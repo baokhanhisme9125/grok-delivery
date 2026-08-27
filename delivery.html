@@ -68,6 +68,9 @@ body::before{content:'';position:fixed;inset:0;background:
 .review-title{font-size:13px;font-weight:700;color:var(--teal);margin-bottom:4px}
 .review-desc{font-size:11px;color:var(--text2);line-height:1.55}
 
+/* Thanks message box */
+.thanks-box{margin-top:16px;background:rgba(255,183,77,.06);border:1px solid rgba(255,183,77,.2);border-radius:14px;padding:16px;font-size:12px;color:var(--text2);line-height:1.6;font-weight:500}
+
 /* Account panel */
 .account-panel{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden}
 .account-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,170,.5),rgba(0,180,216,.5),transparent)}
@@ -99,17 +102,6 @@ body::before{content:'';position:fixed;inset:0;background:
 .guide-list li{font-size:12.5px;color:var(--text2);display:flex;align-items:flex-start;gap:8px;line-height:1.55;font-weight:500}
 .guide-list li::before{content:'→';color:var(--teal);font-weight:800;flex-shrink:0;margin-top:1px}
 .guide-list li b{color:var(--text);font-weight:700}
-
-/* Rules box */
-.rules-box{background:rgba(255,183,77,.04);border:1px solid rgba(255,183,77,.16);border-radius:16px;padding:16px 18px}
-.rules-notice-head{display:flex;align-items:flex-start;gap:10px;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid rgba(255,183,77,.12)}
-.rules-notice-head-icon{font-size:17px;flex-shrink:0;margin-top:1px}
-.rules-notice-title{font-size:13px;font-weight:800;color:var(--amber);margin-bottom:2px}
-.rules-notice-sub{font-size:11.5px;color:var(--muted);font-weight:500}
-.rules-notice-list{display:flex;flex-direction:column;gap:9px}
-.rn-item{font-size:12px;color:var(--text2);line-height:1.65;font-weight:500;padding-left:14px;position:relative}
-.rn-item::before{content:'\2022';position:absolute;left:0;color:var(--amber);font-weight:900;font-size:14px;line-height:1.3}
-.rn-item b{color:#FCA5A5;font-weight:700}
 
 /* Support Box */
 .support-box{background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.2);border-radius:16px;overflow:hidden}
@@ -194,6 +186,13 @@ body::before{content:'';position:fixed;inset:0;background:
             <div class="review-desc" data-i18n="reviewDesc">Leave a positive review on Plati.market to receive a discount voucher for your next purchase.</div>
           </div>
         </div>
+
+        <!-- Thank you & support note -->
+        <div class="thanks-box" data-i18n="thanksText">
+          Thanks a lot for your purchase! 💖 Have a lovely day! ☀️<br><br>
+          If something isn't working correctly, please message me first—I'll help you resolve it as quickly as possible. Please contact me before leaving a negative review so I have an opportunity to assist you. 💕<br><br>
+          Don't forget to leave a positive review to support our shop—it truly means a lot! ✨
+        </div>
       </div>
 
       <!-- RIGHT: Account Delivery -->
@@ -234,28 +233,13 @@ body::before{content:'';position:fixed;inset:0;background:
               <li data-i18n="g1">Open <b>grok.com</b> or the <b>xAI / Grok app</b></li>
               <li data-i18n="g2">Select <b>"Login with email"</b> (see picture below)</li>
               <li data-i18n="g3">Enter the <b>Email &amp; Password</b> provided above</li>
+              <li data-i18n="g4">If the password still says incorrect, please click the <b>Contact Seller</b> button below</li>
             </ul>
             <!-- Screenshots -->
             <div style="display:flex;gap:10px;margin-top:14px">
               <img src="/img/guide-step1.png" alt="Login with email" style="width:50%;border-radius:10px;object-fit:cover;box-shadow:0 2px 12px rgba(0,0,0,.4)">
               <img src="/img/guide-step2.png" alt="Enter email and password" style="width:50%;border-radius:10px;object-fit:cover;box-shadow:0 2px 12px rgba(0,0,0,.4)">
             </div>
-          </div>
-        </div>
-
-        <!-- Rules notice -->
-        <div class="rules-box">
-          <div class="rules-notice-head">
-            <span class="rules-notice-head-icon">📌</span>
-            <div>
-              <div class="rules-notice-title" data-i18n="rulesSectionTitle">Important Usage Instructions:</div>
-              <div class="rules-notice-sub" data-i18n="rulesSectionSub">Please read before logging in 👈👈</div>
-            </div>
-          </div>
-          <div class="rules-notice-list">
-            <div class="rn-item" data-i18n="rnVpn">Russian users: <b>'Turn on VPN'</b> before logging in.</div>
-            <div class="rn-item" data-i18n="rnSpace">When copying credentials, make sure there are <b>NO extra spaces</b> in the password field.</div>
-            <div class="rn-item" data-i18n="rnPolicy">Do not share the account across multiple unauthorized devices.</div>
           </div>
         </div>
 
@@ -283,6 +267,7 @@ const S={
     orderInfo:'Order Information',labelCode:'Order ID / Code',labelEmail:'Email',
     labelProduct:'Product',labelDate:'Date',
     reviewTitle:'Review Reward!',reviewDesc:'Leave a positive review on Plati.market to receive a discount voucher for your next purchase.',
+    thanksText:'Thanks a lot for your purchase! 💖 Have a lovely day! ☀️<br><br>If something isn\'t working correctly, please message me first—I\'ll help you resolve it as quickly as possible. Please contact me before leaving a negative review so I have an opportunity to assist you. 💕<br><br>Don\'t forget to leave a positive review to support our shop—it truly means a lot! ✨',
     yourAccount:'Your Grok Account',emailLabel:'📧 Email Address',passLabel:'🔑 Password',
     passWarnTitle:'Important Password Warning',
     passWarnText:'Do <b>NOT</b> include any extra spaces at the beginning or end when pasting the password! Extra spaces will cause an <b>"Incorrect password"</b> error.',
@@ -291,11 +276,7 @@ const S={
     g1:'Open <b>grok.com</b> or the <b>xAI / Grok app</b>',
     g2:'Select <b>"Login with email"</b> (see picture below)',
     g3:'Enter the <b>Email &amp; Password</b> provided above',
-    rulesSectionTitle:'Important Usage Instructions:',
-    rulesSectionSub:'Please read before logging in 👈👈',
-    rnVpn:'Russian users: <b>\'Turn on VPN\'</b> before logging in.',
-    rnSpace:'When copying credentials, make sure there are <b>NO extra spaces</b> in the password field.',
-    rnPolicy:'Do not share the account across multiple unauthorized devices.',
+    g4:'If the password still says incorrect, please click the <b>Contact Seller</b> button below',
     contactTitle:'Need help? Contact Seller',
     contactDesc:'Issues with your account? Our support team is available to help you.',
     contactBtn:'Contact',
@@ -308,6 +289,7 @@ const S={
     orderInfo:'Информация о заказе',labelCode:'ID заказа / Код',labelEmail:'Email',
     labelProduct:'Продукт',labelDate:'Дата',
     reviewTitle:'Награда за отзыв!',reviewDesc:'Оставьте положительный отзыв на Plati.market и получите скидочный ваучер на следующую покупку.',
+    thanksText:'Огромное спасибо за покупку! 💖 Хорошего вам дня! ☀️<br><br>Если что-то работает некорректно, пожалуйста, сначала напишите мне—я помогу решить проблему как можно быстрее. Пожалуйста, свяжитесь со мной перед тем, как оставлять отрицательный отзыв, чтобы у меня была возможность помочь вам. 💕<br><br>Не забудьте оставить положительный отзыв для поддержки нашего магазина—это действительно очень важно для нас! ✨',
     yourAccount:'Ваш аккаунт Grok',emailLabel:'📧 Адрес Email',passLabel:'🔑 Пароль',
     passWarnTitle:'Важное предупреждение о пароле',
     passWarnText:'НЕ вводите <b>пробелы</b> (особенно в начале или конце) при вводе пароля! Из-за пробела появится ошибка <b>«Неверный пароль»</b>.',
@@ -316,11 +298,7 @@ const S={
     g1:'Откройте <b>grok.com</b> или приложение <b>Grok / xAI</b>',
     g2:'Выберите <b>«Login with email»</b> (см. фото ниже)',
     g3:'Введите <b>Email и Пароль</b>, указанные выше',
-    rulesSectionTitle:'Инструкции по использованию:',
-    rulesSectionSub:'Пожалуйста, прочитайте перед входом 👈👈',
-    rnVpn:'Пользователи из России: <b>«Включите VPN»</b> перед входом.',
-    rnSpace:'При копировании убедитесь, что в поле пароля <b>НЕТ лишних пробелов</b>.',
-    rnPolicy:'Не передавайте аккаунт на сторонние устройства.',
+    g4:'Если пароль по-прежнему выдает ошибку, нажмите кнопку <b>Написать продавцу</b> ниже',
     contactTitle:'💬 Нужна помощь? Напишите продавцу',
     contactDesc:'Проблемы с аккаунтом? Наша команда поможет вам.',
     contactBtn:'Написать',
