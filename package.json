@@ -1,0 +1,13 @@
+{
+  "name": "grok-delivery",
+  "version": "1.0.0",
+  "description": "Automated Grok account delivery for Plati.market",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "googleapis": "^134.0.0",
+    "node-fetch": "^2.7.0"
+  },
+  "engines": { "node": ">=18" }
+}

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Grok Delivery – Get Your Account</title>
+<meta name="description" content="Receive your Grok account after payment on Plati.market"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a1a;--surface:rgba(16,16,36,.88);--card:rgba(18,18,45,.92);--border:rgba(255,255,255,.09);--text:#EEEEFF;--text2:#C5C5E8;--muted:rgba(197,197,232,.55);--orange:#FF6B35;--amber:#FFB74D;--green:#4CAF9F;--red:#FF5C8A;--grad:linear-gradient(135deg,#FF6B35,#FFB74D)}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:32px 16px;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 55% at 15% -5%,rgba(255,107,53,.15) 0%,transparent 65%),radial-gradient(ellipse 55% 45% at 85% 105%,rgba(255,183,77,.1) 0%,transparent 65%);pointer-events:none;z-index:0}
+.page{width:100%;max-width:480px;position:relative;z-index:1}
+.logo{text-align:center;margin-bottom:32px}
+.logo-icon{width:64px;height:64px;background:var(--grad);border-radius:18px;display:inline-flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 6px 24px rgba(255,107,53,.4);margin-bottom:12px}
+.logo-name{font-size:22px;font-weight:800;letter-spacing:-.3px}
+.logo-name span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-sub{font-size:13px;color:var(--muted);margin-top:4px}
+.lang-toggle{position:fixed;top:16px;right:16px;z-index:100;display:flex;gap:6px}
+.lang-btn{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:9px;color:var(--muted);padding:6px 13px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit}
+.lang-btn.active{background:rgba(255,107,53,.18);border-color:rgba(255,107,53,.45);color:var(--text)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,107,53,.5),rgba(255,183,77,.5),transparent)}
+.card-title{font-size:20px;font-weight:800;margin-bottom:6px}
+.card-desc{font-size:13.5px;color:var(--muted);line-height:1.6;margin-bottom:22px}
+.form-group{margin-bottom:16px}
+.form-label{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.05em}
+.form-input{width:100%;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:14px 16px;font-size:15px;font-family:inherit;transition:.2s;outline:none}
+.form-input:focus{border-color:rgba(255,107,53,.6);box-shadow:0 0 0 3px rgba(255,107,53,.15)}
+.btn-primary{width:100%;background:var(--grad);border:none;border-radius:14px;color:#fff;padding:15px;font-size:15px;font-weight:800;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(255,107,53,.35);font-family:inherit;margin-top:8px}
+.btn-primary:hover{box-shadow:0 6px 28px rgba(255,107,53,.5);transform:translateY(-1px)}
+#state-loading{display:none;text-align:center;padding:48px 20px}
+.spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--orange);border-right-color:var(--amber);border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+#state-error{display:none;text-align:center;padding:48px 20px}
+#state-result{display:none}
+.verified-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(76,175,159,.1);border:1px solid rgba(76,175,159,.3);border-radius:100px;padding:8px 22px;font-size:13px;font-weight:700;color:#4CAF9F;margin:0 auto 20px;letter-spacing:.02em}
+.verified-dot{width:8px;height:8px;background:#4CAF9F;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.cred-box{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:14px;padding:17px;margin-bottom:12px}
+.cred-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:9px}
+.cred-row{display:flex;align-items:center;gap:10px}
+.cred-val{flex:1;font-size:14.5px;font-weight:700;font-family:monospace;color:var(--text);word-break:break-all}
+.copy-btn{flex-shrink:0;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:9px;color:var(--text2);padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit}
+.copy-btn:hover{border-color:var(--orange);color:var(--text)}
+.copy-btn.done{background:rgba(76,175,159,.15);border-color:rgba(76,175,159,.4);color:#4CAF9F}
+.copy-all-btn{width:100%;background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.3);border-radius:14px;color:var(--orange);padding:14px;font-size:14px;font-weight:800;cursor:pointer;transition:.2s;font-family:inherit;margin:16px 0}
+.copy-all-btn:hover{background:rgba(255,107,53,.18)}
+.guide-box{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.guide-title{font-size:14px;font-weight:700;margin-bottom:8px;color:var(--text2)}
+.guide-list{list-style:none;padding:0;font-size:13px;color:var(--text2);line-height:2}
+.guide-list li::before{content:'›';color:var(--orange);font-weight:800;margin-right:8px}
+.warn-box{background:rgba(255,92,138,.06);border:1px solid rgba(255,92,138,.2);border-radius:14px;padding:16px;margin-top:16px;display:flex;gap:10px;font-size:12px;color:var(--text2);line-height:1.65}
+.info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.info-label{color:var(--muted)}.info-value{font-weight:600}
+.support-box{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-top:16px}
+.support-box .title{font-weight:700;font-size:14px;margin-bottom:2px}
+.support-box .desc{font-size:12px;color:var(--muted)}
+canvas#confetti-canvas{position:fixed;inset:0;z-index:9999;pointer-events:none}
+</style>
+</head>
+<body>
+<canvas id="confetti-canvas"></canvas>
+<div class="page">
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="btn-en" onclick="setLang('en')">🇬🇧 EN</button>
+    <button class="lang-btn" id="btn-ru" onclick="setLang('ru')">🇷🇺 RU</button>
+  </div>
+  <div class="logo">
+    <div class="logo-icon">🤖</div>
+    <div class="logo-name"><span>Grok</span> Delivery</div>
+    <div class="logo-sub">Plati.market • Automatic delivery 24/7</div>
+  </div>
+
+  <!-- FORM -->
+  <div id="state-form">
+    <div class="card">
+      <div class="card-title" data-i18n="formTitle">Get Your Account</div>
+      <div class="card-desc" data-i18n="formDesc">After payment on Plati.market, enter your <b>Unique Code</b> and <b>purchase email</b> to receive your Grok account.</div>
+      <div class="form-group">
+        <label class="form-label" for="inp-code" data-i18n="labelCode">Unique Code</label>
+        <input id="inp-code" class="form-input" type="text" autocomplete="off" placeholder="e.g. ABCDEF123456"
+               onkeydown="if(event.key==='Enter')document.getElementById('inp-email').focus()"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="inp-email" data-i18n="labelEmail">Email used for purchase</label>
+        <input id="inp-email" class="form-input" type="email" autocomplete="off"
+               onkeydown="if(event.key==='Enter')submitForm()"/>
+      </div>
+      <button class="btn-primary" onclick="submitForm()">✅ <span data-i18n="btnSubmit">Confirm & Get Account</span></button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="state-loading">
+    <div class="card">
+      <div class="spinner"></div>
+      <div style="font-weight:700;font-size:16px;margin-bottom:6px" data-i18n="loading">Verifying your order…</div>
+      <div style="font-size:13px;color:var(--muted)" data-i18n="loadWait">Please wait, this may take a few seconds.</div>
+    </div>
+  </div>
+
+  <!-- ERROR -->
+  <div id="state-error">
+    <div class="card" style="text-align:center">
+      <div style="font-size:52px;margin-bottom:12px">❌</div>
+      <div style="font-size:20px;font-weight:800;margin-bottom:8px" data-i18n="errTitle">Verification Failed</div>
+      <div id="err-msg" style="font-size:14px;color:var(--muted);margin-bottom:20px"></div>
+      <button class="btn-primary" onclick="window.location='/'">← <span data-i18n="btnBack">Back to Home</span></button>
+      <a href="https://plati.market/seller/messages" style="display:block;margin-top:14px;font-size:13px;color:var(--muted)" data-i18n="wrongOrder">Wrong order? <span style="text-decoration:underline">contact here</span></a>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="state-result">
+    <div class="card" style="margin-bottom:16px">
+      <div style="text-align:center">
+        <div class="verified-badge"><div class="verified-dot"></div> <span data-i18n="verified">Verified & Delivered</span></div>
+      </div>
+      <div class="cred-box">
+        <div class="cred-label">📧 Email Address</div>
+        <div class="cred-row">
+          <div class="cred-val" id="acc-email">—</div>
+          <button class="copy-btn" id="cp-email" onclick="copyField('acc-email','cp-email')">📋 Copy</button>
+        </div>
+      </div>
+      <div class="cred-box">
+        <div class="cred-label">🔑 Password</div>
+        <div class="cred-row">
+          <div class="cred-val" id="acc-pass">—</div>
+          <button class="copy-btn" id="cp-pass" onclick="copyField('acc-pass','cp-pass')">📋 Copy</button>
+        </div>
+      </div>
+      <button class="copy-all-btn" onclick="copyAll()">📋 <span data-i18n="copyAll">Copy Email & Password</span></button>
+
+      <div class="guide-box">
+        <div class="guide-title">➡️ Login Method</div>
+        <div class="cred-label" style="margin-bottom:0;font-size:14px;color:var(--text);font-weight:700">Continue with Email</div>
+      </div>
+
+      <div class="guide-box">
+        <div class="guide-title" data-i18n="guideSteps">📱 How to Login</div>
+        <ul class="guide-list">
+          <li data-i18n="s1">Go to <b>grok.com</b> or open the <b>Grok app</b></li>
+          <li data-i18n="s2">Click <b>"Continue with email"</b></li>
+          <li data-i18n="s3">Enter the <b>Email & Password</b> above</li>
+          <li data-i18n="s4">You're in! Enjoy Grok ✅</li>
+        </ul>
+      </div>
+
+      <div class="warn-box">
+        <span style="font-size:18px;flex-shrink:0">⚠️</span>
+        <span data-i18n="warning">The seller will verify the account before delivery. If you change the password, recovery email, or other account info, please save the updated login carefully. Access issues caused by customer-made credential changes may not be covered by warranty.</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:12px;text-transform:uppercase">Order Information</div>
+      <div class="info-row"><span class="info-label">Order ID</span><span class="info-value" id="i-orderid">—</span></div>
+      <div class="info-row"><span class="info-label">Email</span><span class="info-value" id="i-email">—</span></div>
+      <div class="info-row"><span class="info-label" data-i18n="labelProduct">Product</span><span class="info-value">Grok Account</span></div>
+      <div class="info-row"><span class="info-label" data-i18n="labelDate">Date</span><span class="info-value" id="i-date">—</span></div>
+    </div>
+
+    <div class="support-box">
+      <div class="text">
+        <div class="title">💬 Need help?</div>
+        <div class="desc" data-i18n="contactDesc">Issues with your account? Contact the seller.</div>
+      </div>
+      <a href="https://plati.market/seller/messages" class="btn-primary" style="width:auto;padding:10px 20px;font-size:13px;text-decoration:none">💬 Chat</a>
+    </div>
+  </div>
+
+  <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:24px">© 2025 Grok Delivery · Powered by Plati.market</div>
+</div>
+
+<script>
+const S={
+  en:{formTitle:'Get Your Account',formDesc:'After payment on Plati.market, enter your <b>Unique Code</b> and <b>purchase email</b> to receive your Grok account.',labelCode:'Unique Code',labelEmail:'Email used for purchase',btnSubmit:'Confirm & Get Account',loading:'Verifying your order…',loadWait:'Please wait, this may take a few seconds.',errTitle:'Verification Failed',btnBack:'Back to Home',wrongOrder:'Wrong order? <span style="text-decoration:underline">contact here</span>',verified:'Verified & Delivered',copyAll:'Copy Email & Password',guideSteps:'📱 How to Login',s1:'Go to <b>grok.com</b> or open the <b>Grok app</b>',s2:'Click <b>"Continue with email"</b>',s3:'Enter the <b>Email & Password</b> above',s4:"You're in! Enjoy Grok ✅",warning:'The seller will verify the account before delivery. If you change the password, recovery email, or other account info, please save the updated login carefully. Access issues caused by customer-made credential changes may not be covered by warranty.',labelProduct:'Product',labelDate:'Date',contactDesc:'Issues with your account? Contact the seller.',errEmpty:'Please enter both fields.'},
+  ru:{formTitle:'Получите аккаунт',formDesc:'После оплаты на Plati.market введите <b>уникальный код</b> и <b>email покупки</b> для получения аккаунта Grok.',labelCode:'Уникальный код',labelEmail:'Email покупки',btnSubmit:'Подтвердить и получить',loading:'Проверяем заказ…',loadWait:'Пожалуйста, подождите несколько секунд.',errTitle:'Ошибка верификации',btnBack:'На главную',wrongOrder:'Неправильный заказ? <span style="text-decoration:underline">Написать</span>',verified:'Проверено и доставлено',copyAll:'Скопировать Email и Пароль',guideSteps:'📱 Как войти',s1:'Перейдите на <b>grok.com</b> или откройте <b>приложение Grok</b>',s2:'Нажмите <b>«Continue with email»</b>',s3:'Введите <b>Email и Пароль</b> указанные выше',s4:'Готово! Наслаждайтесь Grok ✅',warning:'Продавец проверяет аккаунт перед доставкой. Если вы измените пароль или email восстановления, сохраните новые данные. Проблемы из-за изменений, сделанных покупателем, могут не покрываться гарантией.',labelProduct:'Продукт',labelDate:'Дата',contactDesc:'Проблемы с аккаунтом? Напишите продавцу.',errEmpty:'Заполните оба поля.'}
+};
+let lang='en';
+function setLang(l){lang=l;document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(S[l]&&S[l][k]!==undefined)el.innerHTML=S[l][k];});document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('btn-ru').classList.toggle('active',l==='ru');}
+function show(id){['state-form','state-loading','state-error','state-result'].forEach(s=>document.getElementById(s).style.display='none');document.getElementById(id).style.display='block';}
+function formatDate(iso){try{return new Date(iso).toLocaleString(lang==='ru'?'ru-RU':'en-GB',{dateStyle:'medium',timeStyle:'short'});}catch{return iso;}}
+
+function copyField(elId,btnId){
+  const txt=document.getElementById(elId).textContent.trim();
+  navigator.clipboard.writeText(txt).then(()=>{const btn=document.getElementById(btnId);btn.classList.add('done');btn.textContent='✓ Copied!';setTimeout(()=>{btn.classList.remove('done');btn.textContent='📋 Copy';},2000);});
+}
+function copyAll(){
+  const e=document.getElementById('acc-email').textContent.trim();
+  const p=document.getElementById('acc-pass').textContent.trim();
+  navigator.clipboard.writeText(`Email: ${e}\nPassword: ${p}`).then(()=>{const btn=document.querySelector('.copy-all-btn');btn.innerHTML='✓ Copied!';setTimeout(()=>{btn.innerHTML='📋 '+S[lang].copyAll;},2000);});
+}
+function launchConfetti(){
+  const c=document.getElementById('confetti-canvas'),ctx=c.getContext('2d');c.width=window.innerWidth;c.height=window.innerHeight;
+  const colors=['#FF6B35','#FFB74D','#4CAF9F','#10b981','#fff','#FF5C8A'];
+  const ps=Array.from({length:100},()=>({x:Math.random()*c.width,y:Math.random()*-c.height,r:Math.random()*5+3,d:Math.random()*2+1,col:colors[Math.floor(Math.random()*colors.length)],t:Math.random()*10-5,ta:Math.random()*.2-.1,op:1}));
+  let f=0;function draw(){ctx.clearRect(0,0,c.width,c.height);ps.forEach(p=>{ctx.globalAlpha=p.op;ctx.fillStyle=p.col;ctx.beginPath();ctx.ellipse(p.x,p.y,p.r,p.r*.5,p.t,0,Math.PI*2);ctx.fill();p.y+=p.d;p.t+=p.ta;p.x+=Math.sin(f*.05+p.t)*.8;if(p.y>c.height)p.op-=.02;});ctx.globalAlpha=1;if(ps.some(p=>p.op>0)&&f<250){f++;requestAnimationFrame(draw);}else ctx.clearRect(0,0,c.width,c.height);}draw();
+}
+
+function submitForm(){
+  const code=document.getElementById('inp-code').value.trim();
+  const email=document.getElementById('inp-email').value.trim();
+  if(!code||!email){alert(S[lang].errEmpty);return;}
+  window.location.href=`/delivery.html?uniquecode=${encodeURIComponent(code)}&email=${encodeURIComponent(email)}`;
+}
+</script>
+</body>
+</html>
