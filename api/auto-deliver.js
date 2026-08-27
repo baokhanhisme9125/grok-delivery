@@ -46,7 +46,7 @@ module.exports = async (req, res) => {
       body: JSON.stringify({
         product_ids: [],
         date_start: dateStart,
-        date_end: dateEnd,
+        date_finish: dateEnd,
         returned: 0,
         page: 1,
         rows: 100,
