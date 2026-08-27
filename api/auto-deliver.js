@@ -36,12 +36,21 @@ module.exports = async (req, res) => {
   try {
     const token = await getToken();
 
-    // Fetch recent sales from Digiseller
+    // Fetch recent sales from Digiseller (POST required)
     const dateStart = new Date(Date.now() - daysBack * 86400000).toISOString().split('T')[0];
-    const dateEnd = new Date().toISOString().split('T')[0];
+    const dateEnd = new Date(Date.now() + 86400000).toISOString().split('T')[0];
 
-    const salesRes = await fetch(`${DIGI_API}/seller-sells/v2?token=${token}&date_start=${dateStart}&date_end=${dateEnd}&returned=0&page=1&rows=100`, {
-      headers: { 'Accept': 'application/json' },
+    const salesRes = await fetch(`${DIGI_API}/seller-sells/v2?token=${token}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        product_ids: [],
+        date_start: dateStart,
+        date_end: dateEnd,
+        returned: 0,
+        page: 1,
+        rows: 100,
+      }),
       timeout: 30000,
     });
     const salesData = await salesRes.json();
