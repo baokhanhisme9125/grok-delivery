@@ -8,30 +8,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0a0a1a;--surface:rgba(16,16,36,.88);--card:rgba(18,18,45,.92);--border:rgba(255,255,255,.09);--text:#EEEEFF;--text2:#C5C5E8;--muted:rgba(197,197,232,.55);--orange:#FF6B35;--amber:#FFB74D;--green:#4CAF9F;--red:#FF5C8A;--grad:linear-gradient(135deg,#FF6B35,#FFB74D)}
+:root{--bg:#060B14;--surface:rgba(10,20,40,.88);--card:rgba(12,22,48,.92);--border:rgba(255,255,255,.09);--text:#E8F4FD;--text2:#B0D4F1;--muted:rgba(176,212,241,.55);--accent:#00D4AA;--accent2:#00B4D8;--green:#4CAF9F;--red:#FF5C8A;--grad:linear-gradient(135deg,#00D4AA,#00B4D8)}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:32px 16px;-webkit-font-smoothing:antialiased}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 55% at 15% -5%,rgba(255,107,53,.15) 0%,transparent 65%),radial-gradient(ellipse 55% 45% at 85% 105%,rgba(255,183,77,.1) 0%,transparent 65%);pointer-events:none;z-index:0}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 55% at 15% -5%,rgba(0,212,170,.12) 0%,transparent 65%),radial-gradient(ellipse 55% 45% at 85% 105%,rgba(0,180,216,.08) 0%,transparent 65%);pointer-events:none;z-index:0}
 .page{width:100%;max-width:480px;position:relative;z-index:1}
 .logo{text-align:center;margin-bottom:32px}
-.logo-icon{width:64px;height:64px;background:var(--grad);border-radius:18px;display:inline-flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 6px 24px rgba(255,107,53,.4);margin-bottom:12px}
+.logo-icon{width:64px;height:64px;background:var(--grad);border-radius:18px;display:inline-flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 6px 24px rgba(0,212,170,.35);margin-bottom:12px}
 .logo-name{font-size:22px;font-weight:800;letter-spacing:-.3px}
 .logo-name span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .logo-sub{font-size:13px;color:var(--muted);margin-top:4px}
 .lang-toggle{position:fixed;top:16px;right:16px;z-index:100;display:flex;gap:6px}
 .lang-btn{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:9px;color:var(--muted);padding:6px 13px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit}
-.lang-btn.active{background:rgba(255,107,53,.18);border-color:rgba(255,107,53,.45);color:var(--text)}
+.lang-btn.active{background:rgba(0,212,170,.15);border-color:rgba(0,212,170,.4);color:var(--text)}
 .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,107,53,.5),rgba(255,183,77,.5),transparent)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,170,.5),rgba(0,180,216,.5),transparent)}
 .card-title{font-size:20px;font-weight:800;margin-bottom:6px}
 .card-desc{font-size:13.5px;color:var(--muted);line-height:1.6;margin-bottom:22px}
 .form-group{margin-bottom:16px}
 .form-label{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.05em}
 .form-input{width:100%;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:12px;color:var(--text);padding:14px 16px;font-size:15px;font-family:inherit;transition:.2s;outline:none}
-.form-input:focus{border-color:rgba(255,107,53,.6);box-shadow:0 0 0 3px rgba(255,107,53,.15)}
-.btn-primary{width:100%;background:var(--grad);border:none;border-radius:14px;color:#fff;padding:15px;font-size:15px;font-weight:800;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(255,107,53,.35);font-family:inherit;margin-top:8px}
-.btn-primary:hover{box-shadow:0 6px 28px rgba(255,107,53,.5);transform:translateY(-1px)}
+.form-input:focus{border-color:rgba(0,212,170,.6);box-shadow:0 0 0 3px rgba(0,212,170,.15)}
+.btn-primary{width:100%;background:var(--grad);border:none;border-radius:14px;color:#fff;padding:15px;font-size:15px;font-weight:800;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(0,212,170,.3);font-family:inherit;margin-top:8px}
+.btn-primary:hover{box-shadow:0 6px 28px rgba(0,212,170,.45);transform:translateY(-1px)}
 #state-loading{display:none;text-align:center;padding:48px 20px}
-.spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--orange);border-right-color:var(--amber);border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 20px}
+.spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--accent);border-right-color:var(--accent2);border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 20px}
 @keyframes spin{to{transform:rotate(360deg)}}
 #state-error{display:none;text-align:center;padding:48px 20px}
 #state-result{display:none}
@@ -43,14 +43,14 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .cred-row{display:flex;align-items:center;gap:10px}
 .cred-val{flex:1;font-size:14.5px;font-weight:700;font-family:monospace;color:var(--text);word-break:break-all}
 .copy-btn{flex-shrink:0;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:9px;color:var(--text2);padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit}
-.copy-btn:hover{border-color:var(--orange);color:var(--text)}
+.copy-btn:hover{border-color:var(--accent);color:var(--text)}
 .copy-btn.done{background:rgba(76,175,159,.15);border-color:rgba(76,175,159,.4);color:#4CAF9F}
-.copy-all-btn{width:100%;background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.3);border-radius:14px;color:var(--orange);padding:14px;font-size:14px;font-weight:800;cursor:pointer;transition:.2s;font-family:inherit;margin:16px 0}
-.copy-all-btn:hover{background:rgba(255,107,53,.18)}
+.copy-all-btn{width:100%;background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.25);border-radius:14px;color:var(--accent);padding:14px;font-size:14px;font-weight:800;cursor:pointer;transition:.2s;font-family:inherit;margin:16px 0}
+.copy-all-btn:hover{background:rgba(0,212,170,.15)}
 .guide-box{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
 .guide-title{font-size:14px;font-weight:700;margin-bottom:8px;color:var(--text2)}
 .guide-list{list-style:none;padding:0;font-size:13px;color:var(--text2);line-height:2}
-.guide-list li::before{content:'›';color:var(--orange);font-weight:800;margin-right:8px}
+.guide-list li::before{content:'›';color:var(--accent);font-weight:800;margin-right:8px}
 .warn-box{background:rgba(255,92,138,.06);border:1px solid rgba(255,92,138,.2);border-radius:14px;padding:16px;margin-top:16px;display:flex;gap:10px;font-size:12px;color:var(--text2);line-height:1.65}
 .info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
 .info-label{color:var(--muted)}.info-value{font-weight:600}
@@ -196,7 +196,7 @@ function copyAll(){
 }
 function launchConfetti(){
   const c=document.getElementById('confetti-canvas'),ctx=c.getContext('2d');c.width=window.innerWidth;c.height=window.innerHeight;
-  const colors=['#FF6B35','#FFB74D','#4CAF9F','#10b981','#fff','#FF5C8A'];
+  const colors=['#00D4AA','#00B4D8','#4CAF9F','#10b981','#fff','#67E8F9'];
   const ps=Array.from({length:100},()=>({x:Math.random()*c.width,y:Math.random()*-c.height,r:Math.random()*5+3,d:Math.random()*2+1,col:colors[Math.floor(Math.random()*colors.length)],t:Math.random()*10-5,ta:Math.random()*.2-.1,op:1}));
   let f=0;function draw(){ctx.clearRect(0,0,c.width,c.height);ps.forEach(p=>{ctx.globalAlpha=p.op;ctx.fillStyle=p.col;ctx.beginPath();ctx.ellipse(p.x,p.y,p.r,p.r*.5,p.t,0,Math.PI*2);ctx.fill();p.y+=p.d;p.t+=p.ta;p.x+=Math.sin(f*.05+p.t)*.8;if(p.y>c.height)p.op-=.02;});ctx.globalAlpha=1;if(ps.some(p=>p.op>0)&&f<250){f++;requestAnimationFrame(draw);}else ctx.clearRect(0,0,c.width,c.height);}draw();
 }
