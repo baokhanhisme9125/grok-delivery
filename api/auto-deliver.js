@@ -86,9 +86,9 @@ module.exports = async (req, res) => {
     } : null;
 
     for (const sale of sales) {
-      const uniqueCode = sale.unique_code || sale.uniquecode || sale.code || '';
-      const orderId = String(sale.inv || sale.id_invoice || sale.order_id || sale.id || '');
-      const buyerEmail = sale.email || sale.buyer_email || '';
+      const uniqueCode = sale.product_entry || '';
+      const orderId = String(sale.invoice_id || '');
+      const buyerEmail = sale.email || '';
 
       if (!uniqueCode) {
         skipped++;
