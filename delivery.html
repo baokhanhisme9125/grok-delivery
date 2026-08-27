@@ -253,7 +253,7 @@ body::before{content:'';position:fixed;inset:0;background:
         </div>
 
         <!-- Track your order -->
-        <div class="order-link-box" id="order-link-box">
+        <div class="order-link-box" id="order-link-box" style="display:none">
           <div class="order-link-top">
             <div>
               <div style="font-size:13px;font-weight:800;color:#7DD3FC;margin-bottom:4px">📦 <span data-i18n="orderLinkTitle">Track your order</span></div>
@@ -407,10 +407,11 @@ async function load(){
     document.getElementById('acc-email').textContent=data.account.email;
     document.getElementById('acc-pass').textContent=data.account.password;
     document.getElementById('verified-label').textContent=S[lang][data.alreadyDelivered?'alreadyDelivered':'verified'];
-    // Set order tracking link
-    if(data.order.orderId){
-      const olEl=document.getElementById('order-link');
-      if(olEl) olEl.href='https://plati.market/seller/'+data.order.orderId;
+    // Set order tracking link (Digiseller format, same as CapCut)
+    const orderId = data.order.orderId || '';
+    if(orderId){
+      document.getElementById('order-link').href = `https://digiseller.me/info/buy.asp?id_i=${orderId}&lang=en-US`;
+      document.getElementById('order-link-box').style.display = 'block';
     }
     show('state-result');
     if(!data.alreadyDelivered)launchConfetti();
