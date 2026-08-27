@@ -4,142 +4,407 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Grok Delivery – Your Account</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&subset=latin,cyrillic&display=swap" rel="stylesheet"/>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#060B14;--card:rgba(12,22,48,.95);--border:rgba(255,255,255,.09);--text:#E8F4FD;--text2:#B0D4F1;--muted:rgba(176,212,241,.55);--accent:#00D4AA;--accent2:#00B4D8;--green:#4CAF9F;--red:#FF5C8A;--grad:linear-gradient(135deg,#00D4AA,#00B4D8)}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px;-webkit-font-smoothing:antialiased}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 55% at 15% -5%,rgba(0,212,170,.12) 0%,transparent 65%),radial-gradient(ellipse 55% 45% at 85% 105%,rgba(0,180,216,.08) 0%,transparent 65%);pointer-events:none;z-index:0}
-.page{width:100%;max-width:520px;position:relative;z-index:1}
-.header{display:flex;align-items:center;justify-content:space-between;padding:0 0 24px}
+:root{
+  --bg:#060B14;--surface:rgba(12,22,48,.88);--card:rgba(14,26,54,.95);
+  --border:rgba(255,255,255,.09);--border-l:rgba(255,255,255,.16);
+  --text:#EEEEFF;--text2:#C5C5E8;--muted:rgba(197,197,232,.55);
+  --violet:#00D4AA;--pink:#00B4D8;--blue:#4FC3F7;--teal:#00D4AA;
+  --green:#4CAF9F;--amber:#FFB74D;--red:#FF5C8A;
+  --grad:linear-gradient(135deg,#00D4AA,#00B4D8);
+  --cyan:#00D4AA;--gold:#FFB74D;
+}
+body{font-family:'Inter','Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(ellipse 70% 55% at 15% -5%,rgba(0,212,170,.18) 0%,transparent 65%),
+  radial-gradient(ellipse 55% 45% at 85% 105%,rgba(0,180,216,.12) 0%,transparent 65%);
+  pointer-events:none;z-index:0}
+.orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
+.orb1{width:440px;height:440px;background:rgba(0,212,170,.08);top:-120px;left:-120px}
+.orb2{width:360px;height:360px;background:rgba(0,180,216,.06);bottom:-80px;right:-80px}
+.page{width:100%;max-width:960px;position:relative;z-index:1}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;padding:0 0 32px}
 .logo{display:flex;align-items:center;gap:10px}
-.logo-icon{width:42px;height:42px;background:var(--grad);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 20px rgba(0,212,170,.35)}
-.logo-name{font-size:19px;font-weight:800}.logo-name span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.header-right{display:flex;align-items:center;gap:8px}
-.check-btn{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:10px;color:var(--muted);padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;transition:.2s;font-family:inherit}
-.check-btn:hover{border-color:var(--accent);color:var(--text)}
+.logo-icon{width:42px;height:42px;background:var(--grad);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 20px rgba(0,212,170,.4)}
+.logo-name{font-size:19px;font-weight:800;letter-spacing:-.3px}
+.logo-name span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.lang-toggle{display:flex;gap:6px}
 .lang-btn{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:9px;color:var(--muted);padding:6px 13px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit}
-.lang-btn.active{background:rgba(0,212,170,.15);border-color:rgba(0,212,170,.4);color:var(--text)}
-.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,170,.5),rgba(0,180,216,.5),transparent)}
-.verified-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(76,175,159,.1);border:1px solid rgba(76,175,159,.3);border-radius:100px;padding:8px 22px;font-size:13px;font-weight:700;color:#4CAF9F}
+.lang-btn.active{background:rgba(0,212,170,.18);border-color:rgba(0,212,170,.45);color:var(--text)}
+
+/* Status badge */
+.status-bar{display:flex;justify-content:center;margin-bottom:28px}
+.verified-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(76,175,159,.1);border:1px solid rgba(76,175,159,.3);border-radius:100px;padding:8px 22px;font-size:13px;font-weight:700;color:#4CAF9F;letter-spacing:.02em}
 .verified-dot{width:8px;height:8px;background:#4CAF9F;border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.cred-box{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:14px;padding:17px;margin-bottom:12px}
+
+/* Loading */
+#state-loading{text-align:center;padding:64px 20px}
+.spinner{width:52px;height:52px;border:3px solid var(--border);border-top-color:var(--violet);border-right-color:var(--pink);border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 24px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Grid layout */
+.delivery-grid{display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start}
+@media(max-width:680px){.delivery-grid{grid-template-columns:1fr}}
+
+/* Order info panel */
+.info-panel{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px;position:relative;overflow:hidden}
+.info-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,170,.5),rgba(0,180,216,.5),transparent)}
+.panel-title{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:20px}
+.info-row{padding:11px 0;border-bottom:1px solid var(--border)}
+.info-row:last-child{border-bottom:none}
+.info-label{font-size:10.5px;font-weight:700;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em}
+.info-value{font-size:13px;font-weight:600;color:var(--text2);word-break:break-all}
+
+/* Review box */
+.review-box{margin-top:18px;background:rgba(0,212,170,.06);border:1px solid rgba(0,212,170,.18);border-radius:14px;padding:16px;display:flex;gap:12px;align-items:flex-start}
+.review-icon{font-size:24px;flex-shrink:0}
+.review-title{font-size:13px;font-weight:700;color:var(--teal);margin-bottom:4px}
+.review-desc{font-size:11px;color:var(--text2);line-height:1.55}
+
+/* Account panel */
+.account-panel{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden}
+.account-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,170,.5),rgba(0,180,216,.5),transparent)}
+.account-title{font-size:16px;font-weight:800;display:flex;align-items:center;gap:8px;letter-spacing:-.2px}
+
+.cred-box{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:14px;padding:17px;transition:border-color .2s}
+.cred-box:hover{border-color:var(--border-l)}
 .cred-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:9px}
 .cred-row{display:flex;align-items:center;gap:10px}
-.cred-val{flex:1;font-size:14.5px;font-weight:700;font-family:monospace;color:var(--text);word-break:break-all}
-.copy-btn{flex-shrink:0;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:9px;color:var(--text2);padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit}
-.copy-btn:hover{border-color:var(--accent);color:var(--text)}
-.copy-btn.done{background:rgba(76,175,159,.15);border-color:rgba(76,175,159,.4);color:#4CAF9F}
-.copy-all-btn{width:100%;background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.25);border-radius:14px;color:var(--accent);padding:14px;font-size:14px;font-weight:800;cursor:pointer;transition:.2s;font-family:inherit;margin:12px 0}
-.guide-box{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
-.guide-title{font-size:14px;font-weight:700;margin-bottom:8px;color:var(--text2)}
-.guide-list{list-style:none;padding:0;font-size:13px;color:var(--text2);line-height:2}
-.guide-list li::before{content:'›';color:var(--accent);font-weight:800;margin-right:8px}
-.warn-box{background:rgba(255,92,138,.06);border:1px solid rgba(255,92,138,.2);border-radius:14px;padding:16px;margin-top:12px;display:flex;gap:10px;font-size:12px;color:var(--text2);line-height:1.65}
-.info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
-.info-label{color:var(--muted)}.info-value{font-weight:600}
-.spinner{width:52px;height:52px;border:3px solid var(--border);border-top-color:var(--accent);border-right-color:var(--accent2);border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 24px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--grad);border:none;border-radius:14px;color:#fff;padding:12px 24px;font-size:14px;font-weight:800;cursor:pointer;text-decoration:none;font-family:inherit;box-shadow:0 4px 20px rgba(0,212,170,.3)}
-canvas#confetti-canvas{position:fixed;inset:0;z-index:9999;pointer-events:none}
+.cred-val{flex:1;font-size:14.5px;font-weight:700;font-family:monospace;color:var(--text);word-break:break-all;letter-spacing:.03em}
+.copy-btn{flex-shrink:0;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:9px;color:var(--text2);padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;white-space:nowrap;font-family:inherit}
+.copy-btn:hover{border-color:var(--teal);color:var(--text)}
+.copy-btn.done{background:rgba(76,175,159,.14);border-color:rgba(76,175,159,.35);color:#4CAF9F}
+
+.copy-all-btn{width:100%;background:var(--grad);border:none;border-radius:13px;color:#fff;padding:14px;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(0,212,170,.35);font-family:inherit}
+.copy-all-btn:hover{box-shadow:0 6px 28px rgba(0,212,170,.5);transform:translateY(-1px)}
+
+/* Password Warning Notice Box */
+.pass-warn-box{background:rgba(255,92,138,.08);border:1px solid rgba(255,92,138,.3);border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.pass-warn-icon{font-size:20px;flex-shrink:0}
+.pass-warn-title{font-size:13px;font-weight:800;color:#FF5C8A;margin-bottom:3px}
+.pass-warn-text{font-size:12px;color:var(--text2);line-height:1.55;font-weight:500}
+.pass-warn-text b{color:#FFA8C5;font-weight:700}
+
+/* Guide box */
+.guide-box{background:rgba(0,212,170,.05);border:1px solid rgba(0,212,170,.17);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.guide-section-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--teal);margin-bottom:9px;padding:5px 11px;background:rgba(0,212,170,.1);border-radius:8px;display:inline-block}
+.guide-list{list-style:none;display:flex;flex-direction:column;gap:7px}
+.guide-list li{font-size:12.5px;color:var(--text2);display:flex;align-items:flex-start;gap:8px;line-height:1.55;font-weight:500}
+.guide-list li::before{content:'→';color:var(--teal);font-weight:800;flex-shrink:0;margin-top:1px}
+.guide-list li b{color:var(--text);font-weight:700}
+
+/* Rules box */
+.rules-box{background:rgba(255,183,77,.04);border:1px solid rgba(255,183,77,.16);border-radius:16px;padding:16px 18px}
+.rules-notice-head{display:flex;align-items:flex-start;gap:10px;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid rgba(255,183,77,.12)}
+.rules-notice-head-icon{font-size:17px;flex-shrink:0;margin-top:1px}
+.rules-notice-title{font-size:13px;font-weight:800;color:var(--amber);margin-bottom:2px}
+.rules-notice-sub{font-size:11.5px;color:var(--muted);font-weight:500}
+.rules-notice-list{display:flex;flex-direction:column;gap:9px}
+.rn-item{font-size:12px;color:var(--text2);line-height:1.65;font-weight:500;padding-left:14px;position:relative}
+.rn-item::before{content:'\2022';position:absolute;left:0;color:var(--amber);font-weight:900;font-size:14px;line-height:1.3}
+.rn-item b{color:#FCA5A5;font-weight:700}
+
+/* Support Box */
+.support-box{background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.2);border-radius:16px;overflow:hidden}
+.support-top{display:flex;align-items:center;gap:14px;padding:16px 18px}
+.support-top-text{flex:1}
+.support-top-title{font-size:13px;font-weight:700;color:#00D4AA;margin-bottom:3px}
+.support-top-desc{font-size:12px;color:var(--text2);line-height:1.5;font-weight:500}
+.contact-btn{flex-shrink:0;background:var(--grad);border:none;border-radius:10px;color:#fff;padding:9px 16px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-family:inherit;transition:all .2s;box-shadow:0 3px 12px rgba(0,212,170,.35)}
+.contact-btn:hover{box-shadow:0 5px 20px rgba(0,212,170,.55);transform:translateY(-1px)}
+
+.check-another{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:14px;color:var(--muted);padding:13px 32px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;font-family:inherit}
+.check-another:hover{border-color:var(--teal);color:var(--text2)}
 </style>
 </head>
 <body>
-<canvas id="confetti-canvas"></canvas>
+<div class="orb orb1"></div><div class="orb orb2"></div>
+<canvas id="confetti-canvas" style="position:fixed;top:0;left:0;pointer-events:none;z-index:999"></canvas>
+
 <div class="page">
+  <!-- Header -->
   <div class="header">
-    <div class="logo"><div class="logo-icon">🤖</div><div class="logo-name"><span>Grok</span> Delivery</div></div>
-    <div class="header-right">
-      <a class="check-btn" href="/">← Check Another</a>
-      <button class="lang-btn active" id="btn-en" onclick="setLang('en')">🇬🇧 EN</button>
-      <button class="lang-btn" id="btn-ru" onclick="setLang('ru')">🇷🇺 RU</button>
+    <div class="logo">
+      <div class="logo-icon">🤖</div>
+      <div class="logo-name"><span>Grok</span> Delivery</div>
     </div>
-  </div>
-
-  <div id="state-loading" style="text-align:center;padding:64px 20px">
-    <div class="card"><div class="spinner"></div>
-    <div style="font-weight:700;font-size:16px;margin-bottom:6px" data-i18n="loading">Verifying your order…</div>
-    <div style="font-size:13px;color:var(--muted)" data-i18n="loadWait">Please wait a few seconds.</div></div>
-  </div>
-
-  <div id="state-error" style="display:none;text-align:center;padding:64px 20px">
-    <div class="card">
-    <div style="font-size:52px;margin-bottom:12px">❌</div>
-    <div style="font-size:20px;font-weight:800;margin-bottom:8px" data-i18n="errTitle">Verification Failed</div>
-    <div id="err-msg" style="font-size:14px;color:var(--muted);margin-bottom:20px"></div>
-    <a class="btn-primary" href="/">← Back to Home</a></div>
-  </div>
-
-  <div id="state-result" style="display:none">
-    <div style="text-align:center;margin-bottom:20px"><div class="verified-badge"><div class="verified-dot"></div><span data-i18n="verified">Verified & Delivered</span></div></div>
-    <div class="card">
-      <div class="cred-box"><div class="cred-label">📧 Email Address</div><div class="cred-row"><div class="cred-val" id="acc-email">—</div><button class="copy-btn" id="cp-email" onclick="copyField('acc-email','cp-email')">📋 Copy</button></div></div>
-      <div class="cred-box"><div class="cred-label">🔑 Password</div><div class="cred-row"><div class="cred-val" id="acc-pass">—</div><button class="copy-btn" id="cp-pass" onclick="copyField('acc-pass','cp-pass')">📋 Copy</button></div></div>
-      <button class="copy-all-btn" onclick="copyAll()">📋 Copy Email & Password</button>
-      <div class="guide-box">
-        <div class="guide-title">➡️ Login Method: Continue with Email</div>
-        <ul class="guide-list">
-          <li>Go to <b>grok.com</b> or open the <b>Grok app</b></li>
-          <li>Click <b>"Continue with email"</b></li>
-          <li>Enter the <b>Email & Password</b> above</li>
-          <li>You're in! Enjoy Grok ✅</li>
-        </ul>
+    <div style="display:flex;align-items:center;gap:10px">
+      <a href="/" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:10px;color:rgba(197,197,232,.6);padding:7px 14px;font-size:13px;font-weight:600;text-decoration:none;transition:.2s" onmouseover="this.style.borderColor='rgba(0,212,170,.5)';this.style.color='#EEEEFF'" onmouseout="this.style.borderColor='rgba(255,255,255,.09)';this.style.color='rgba(197,197,232,.6)'">← <span data-i18n="checkAnother">Check Another</span></a>
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="btn-en" onclick="setLang('en')">🇬🇧 EN</button>
+        <button class="lang-btn" id="btn-ru" onclick="setLang('ru')">🇷🇺 RU</button>
       </div>
-      <div class="warn-box"><span style="font-size:18px;flex-shrink:0">⚠️</span><span data-i18n="warning">The seller will verify the account before delivery. If you change the password, recovery email, or other account info, save the updated login carefully. Access issues caused by customer-made credential changes may not be covered by warranty.</span></div>
     </div>
-    <div class="card">
-      <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:12px;text-transform:uppercase">Order Information</div>
-      <div class="info-row"><span class="info-label">Order ID</span><span class="info-value" id="i-orderid">—</span></div>
-      <div class="info-row"><span class="info-label">Email</span><span class="info-value" id="i-email">—</span></div>
-      <div class="info-row"><span class="info-label">Product</span><span class="info-value">Grok Account</span></div>
-      <div class="info-row"><span class="info-label">Date</span><span class="info-value" id="i-date">—</span></div>
+  </div>
+
+  <!-- Loading -->
+  <div id="state-loading">
+    <div class="spinner"></div>
+    <div style="font-size:16px;font-weight:700" data-i18n="loading">Verifying your order...</div>
+    <div style="font-size:13px;color:var(--muted);margin-top:6px" data-i18n="loadingDesc">Checking Plati.market & allocating account</div>
+  </div>
+
+  <!-- Error -->
+  <div id="state-error" style="display:none;text-align:center;padding:60px 20px">
+    <div style="font-size:48px;margin-bottom:16px">❌</div>
+    <div style="font-size:20px;font-weight:800;margin-bottom:8px" data-i18n="errTitle">Verification Failed</div>
+    <div id="err-msg" style="font-size:14px;color:var(--muted);margin-bottom:24px"></div>
+    <a href="/" class="check-another">← <span data-i18n="backHome">Back to Home</span></a>
+  </div>
+
+  <!-- Result -->
+  <div id="state-result" style="display:none">
+    <div class="status-bar">
+      <div class="verified-badge"><div class="verified-dot"></div><span id="verified-label">● Verified Paid</span></div>
     </div>
-    <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted)">💖 Thanks for your purchase! Don't forget to leave a positive review ✨</div>
+
+    <div class="delivery-grid">
+      <!-- LEFT: Order Info -->
+      <div class="info-panel">
+        <div class="panel-title" data-i18n="orderInfo">Order Information</div>
+        <div class="info-row">
+          <div class="info-label" data-i18n="labelCode">Order ID / Code</div>
+          <div class="info-value" id="i-code">—</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label" data-i18n="labelEmail">Email</div>
+          <div class="info-value" id="i-email">—</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label" data-i18n="labelProduct">Product</div>
+          <div class="info-value">Grok Account</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label" data-i18n="labelDate">Date</div>
+          <div class="info-value" id="i-date">—</div>
+        </div>
+
+        <!-- Review reward -->
+        <div class="review-box">
+          <div class="review-icon">🎁</div>
+          <div>
+            <div class="review-title" data-i18n="reviewTitle">Review Reward!</div>
+            <div class="review-desc" data-i18n="reviewDesc">Leave a positive review on Plati.market to receive a discount voucher for your next purchase.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Account Delivery -->
+      <div class="account-panel">
+        <div class="account-title">🤖 <span data-i18n="yourAccount">Your Grok Account</span></div>
+
+        <div class="cred-box">
+          <div class="cred-label" data-i18n="emailLabel">📧 Email Address</div>
+          <div class="cred-row">
+            <div class="cred-val" id="acc-email">—</div>
+            <button class="copy-btn" id="copy-email-btn" onclick="copyField('acc-email','copy-email-btn')">📋 <span data-i18n="copy">Copy</span></button>
+          </div>
+        </div>
+
+        <div class="cred-box">
+          <div class="cred-label" data-i18n="passLabel">🔑 Password</div>
+          <div class="cred-row">
+            <div class="cred-val" id="acc-pass">—</div>
+            <button class="copy-btn" id="copy-pass-btn" onclick="copyField('acc-pass','copy-pass-btn')">📋 <span data-i18n="copy">Copy</span></button>
+          </div>
+        </div>
+
+        <!-- Warning: No spaces in password -->
+        <div class="pass-warn-box">
+          <div class="pass-warn-icon">⚠️</div>
+          <div>
+            <div class="pass-warn-title" data-i18n="passWarnTitle">Important Password Warning</div>
+            <div class="pass-warn-text" data-i18n="passWarnText">Do <b>NOT</b> include any extra spaces at the beginning or end when pasting the password! Extra spaces will cause an <b>"Incorrect password"</b> error.</div>
+          </div>
+        </div>
+
+        <button class="copy-all-btn" onclick="copyAll()">📋 <span data-i18n="copyAll">Copy Email & Password</span></button>
+
+        <div class="guide-box">
+          <div>
+            <div class="guide-section-title" data-i18n="secLogin">🔑 How to Log In to Grok</div>
+            <ul class="guide-list">
+              <li data-i18n="g1">Open <b>grok.com</b> or the <b>xAI / Grok app</b></li>
+              <li data-i18n="g2">Select <b>"Login with email"</b> (see picture below)</li>
+              <li data-i18n="g3">Enter the <b>Email &amp; Password</b> provided above</li>
+            </ul>
+            <!-- Screenshots -->
+            <div style="display:flex;gap:10px;margin-top:14px">
+              <img src="/img/guide-step1.png" alt="Login with email" style="width:50%;border-radius:10px;object-fit:cover;box-shadow:0 2px 12px rgba(0,0,0,.4)">
+              <img src="/img/guide-step2.png" alt="Enter email and password" style="width:50%;border-radius:10px;object-fit:cover;box-shadow:0 2px 12px rgba(0,0,0,.4)">
+            </div>
+          </div>
+        </div>
+
+        <!-- Rules notice -->
+        <div class="rules-box">
+          <div class="rules-notice-head">
+            <span class="rules-notice-head-icon">📌</span>
+            <div>
+              <div class="rules-notice-title" data-i18n="rulesSectionTitle">Important Usage Instructions:</div>
+              <div class="rules-notice-sub" data-i18n="rulesSectionSub">Please read before logging in 👈👈</div>
+            </div>
+          </div>
+          <div class="rules-notice-list">
+            <div class="rn-item" data-i18n="rnVpn">Russian users: <b>'Turn on VPN'</b> before logging in.</div>
+            <div class="rn-item" data-i18n="rnSpace">When copying credentials, make sure there are <b>NO extra spaces</b> in the password field.</div>
+            <div class="rn-item" data-i18n="rnPolicy">Do not share the account across multiple unauthorized devices.</div>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="support-box">
+          <div class="support-top">
+            <div class="support-top-text">
+              <div class="support-top-title">💬 <span data-i18n="contactTitle">Need help? Contact Seller</span></div>
+              <div class="support-top-desc" data-i18n="contactDesc">Issues with your account? Our support team is available to help you.</div>
+            </div>
+            <a id="contact-link" href="https://t.me/Donk9125" target="_blank" class="contact-btn">✉️ <span data-i18n="contactBtn">Contact</span></a>
+          </div>
+        </div>
+
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-const S={en:{loading:'Verifying your order…',loadWait:'Please wait a few seconds.',errTitle:'Verification Failed',verified:'Verified & Delivered',warning:'The seller will verify the account before delivery. If you change the password, recovery email, or other account info, save the updated login carefully. Access issues caused by customer-made credential changes may not be covered by warranty.'},ru:{loading:'Проверяем заказ…',loadWait:'Подождите несколько секунд.',errTitle:'Ошибка верификации',verified:'Проверено и доставлено',warning:'Продавец проверяет аккаунт перед доставкой. Если вы измените пароль или email восстановления, сохраните новые данные.'}};
-let lang='en';
-function setLang(l){lang=l;document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(S[l]&&S[l][k]!==undefined)el.innerHTML=S[l][k];});document.getElementById('btn-en').classList.toggle('active',l==='en');document.getElementById('btn-ru').classList.toggle('active',l==='ru');}
-function show(id){['state-loading','state-error','state-result'].forEach(s=>document.getElementById(s).style.display='none');document.getElementById(id).style.display=id==='state-loading'?'block':id==='state-error'?'block':'block';}
-function copyField(elId,btnId){const txt=document.getElementById(elId).textContent.trim();navigator.clipboard.writeText(txt).then(()=>{const btn=document.getElementById(btnId);btn.classList.add('done');btn.textContent='✓ Copied!';setTimeout(()=>{btn.classList.remove('done');btn.textContent='📋 Copy';},2000);});}
-function copyAll(){const e=document.getElementById('acc-email').textContent.trim();const p=document.getElementById('acc-pass').textContent.trim();navigator.clipboard.writeText(`Email: ${e}\nPassword: ${p}`).then(()=>{const btn=document.querySelector('.copy-all-btn');btn.innerHTML='✓ Copied!';setTimeout(()=>{btn.innerHTML='📋 Copy Email & Password';},2000);});}
-function launchConfetti(){const c=document.getElementById('confetti-canvas'),ctx=c.getContext('2d');c.width=window.innerWidth;c.height=window.innerHeight;const colors=['#00D4AA','#00B4D8','#4CAF9F','#10b981','#fff'];const ps=Array.from({length:100},()=>({x:Math.random()*c.width,y:Math.random()*-c.height,r:Math.random()*5+3,d:Math.random()*2+1,col:colors[Math.floor(Math.random()*colors.length)],t:Math.random()*10-5,ta:Math.random()*.2-.1,op:1}));let f=0;function draw(){ctx.clearRect(0,0,c.width,c.height);ps.forEach(p=>{ctx.globalAlpha=p.op;ctx.fillStyle=p.col;ctx.beginPath();ctx.ellipse(p.x,p.y,p.r,p.r*.5,p.t,0,Math.PI*2);ctx.fill();p.y+=p.d;p.t+=p.ta;p.x+=Math.sin(f*.05+p.t)*.8;if(p.y>c.height)p.op-=.02;});ctx.globalAlpha=1;if(ps.some(p=>p.op>0)&&f<250){f++;requestAnimationFrame(draw);}else ctx.clearRect(0,0,c.width,c.height);}draw();}
+const S={
+  en:{
+    loading:'Verifying your order...',loadingDesc:'Checking Plati.market & allocating account',
+    errTitle:'Verification Failed',backHome:'Back to Home',
+    orderInfo:'Order Information',labelCode:'Order ID / Code',labelEmail:'Email',
+    labelProduct:'Product',labelDate:'Date',
+    reviewTitle:'Review Reward!',reviewDesc:'Leave a positive review on Plati.market to receive a discount voucher for your next purchase.',
+    yourAccount:'Your Grok Account',emailLabel:'📧 Email Address',passLabel:'🔑 Password',
+    passWarnTitle:'Important Password Warning',
+    passWarnText:'Do <b>NOT</b> include any extra spaces at the beginning or end when pasting the password! Extra spaces will cause an <b>"Incorrect password"</b> error.',
+    copy:'Copy',copied:'Copied!',copyAll:'Copy Email & Password',
+    secLogin:'🔑 How to Log In to Grok',
+    g1:'Open <b>grok.com</b> or the <b>xAI / Grok app</b>',
+    g2:'Select <b>"Login with email"</b> (see picture below)',
+    g3:'Enter the <b>Email &amp; Password</b> provided above',
+    rulesSectionTitle:'Important Usage Instructions:',
+    rulesSectionSub:'Please read before logging in 👈👈',
+    rnVpn:'Russian users: <b>\'Turn on VPN\'</b> before logging in.',
+    rnSpace:'When copying credentials, make sure there are <b>NO extra spaces</b> in the password field.',
+    rnPolicy:'Do not share the account across multiple unauthorized devices.',
+    contactTitle:'Need help? Contact Seller',
+    contactDesc:'Issues with your account? Our support team is available to help you.',
+    contactBtn:'Contact',
+    checkAnother:'Check Another',
+    verified:'● Verified Paid',alreadyDelivered:'Previously Delivered',
+  },
+  ru:{
+    loading:'Проверка вашего заказа...',loadingDesc:'Проверяем Plati.market и выделяем аккаунт',
+    errTitle:'Ошибка проверки',backHome:'На главную',
+    orderInfo:'Информация о заказе',labelCode:'ID заказа / Код',labelEmail:'Email',
+    labelProduct:'Продукт',labelDate:'Дата',
+    reviewTitle:'Награда за отзыв!',reviewDesc:'Оставьте положительный отзыв на Plati.market и получите скидочный ваучер на следующую покупку.',
+    yourAccount:'Ваш аккаунт Grok',emailLabel:'📧 Адрес Email',passLabel:'🔑 Пароль',
+    passWarnTitle:'Важное предупреждение о пароле',
+    passWarnText:'НЕ вводите <b>пробелы</b> (особенно в начале или конце) при вводе пароля! Из-за пробела появится ошибка <b>«Неверный пароль»</b>.',
+    copy:'Копировать',copied:'Скопировано!',copyAll:'Скопировать Email и Пароль',
+    secLogin:'🔑 Как войти в Grok',
+    g1:'Откройте <b>grok.com</b> или приложение <b>Grok / xAI</b>',
+    g2:'Выберите <b>«Login with email»</b> (см. фото ниже)',
+    g3:'Введите <b>Email и Пароль</b>, указанные выше',
+    rulesSectionTitle:'Инструкции по использованию:',
+    rulesSectionSub:'Пожалуйста, прочитайте перед входом 👈👈',
+    rnVpn:'Пользователи из России: <b>«Включите VPN»</b> перед входом.',
+    rnSpace:'При копировании убедитесь, что в поле пароля <b>НЕТ лишних пробелов</b>.',
+    rnPolicy:'Не передавайте аккаунт на сторонние устройства.',
+    contactTitle:'💬 Нужна помощь? Напишите продавцу',
+    contactDesc:'Проблемы с аккаунтом? Наша команда поможет вам.',
+    contactBtn:'Написать',
+    checkAnother:'Проверить другой заказ',
+    verified:'● Оплата подтверждена',alreadyDelivered:'Ранее доставлено',
+  }
+};
 
-let _loaded=false;
-window.addEventListener('DOMContentLoaded',load);
-window.addEventListener('pageshow',e=>{if(e.persisted&&!_loaded)load();});
+let lang='en';
+
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(S[l]&&S[l][k]!==undefined)el.innerHTML=S[l][k];});
+  document.getElementById('btn-en').classList.toggle('active',l==='en');
+  document.getElementById('btn-ru').classList.toggle('active',l==='ru');
+}
+
+function show(id){['state-loading','state-error','state-result'].forEach(s=>document.getElementById(s).style.display='none');document.getElementById(id).style.display='block';}
+
+function formatDate(iso){try{return new Date(iso).toLocaleString(lang==='ru'?'ru-RU':'en-GB',{dateStyle:'medium',timeStyle:'short'});}catch{return iso;}}
+
+function copyField(elId,btnId){
+  const txt=document.getElementById(elId).textContent.trim();
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.getElementById(btnId);
+    btn.classList.add('done');btn.textContent='✓ '+S[lang].copied;
+    setTimeout(()=>{btn.classList.remove('done');btn.innerHTML='📋 <span data-i18n="copy">'+S[lang].copy+'</span>';},2000);
+  });
+}
+
+function copyAll(){
+  const email=document.getElementById('acc-email').textContent.trim();
+  const pass=document.getElementById('acc-pass').textContent.trim();
+  navigator.clipboard.writeText(`Email: ${email}\nPassword: ${pass}`).then(()=>{
+    const btn=document.querySelector('.copy-all-btn');
+    btn.innerHTML='✓ '+S[lang].copied;
+    setTimeout(()=>{btn.innerHTML='📋 <span data-i18n="copyAll">'+S[lang].copyAll+'</span>';},2000);
+  });
+}
+
+function launchConfetti(){
+  const c=document.getElementById('confetti-canvas');
+  const ctx=c.getContext('2d');
+  c.width=window.innerWidth;c.height=window.innerHeight;
+  const colors=['#00D4AA','#00B4D8','#4CAF9F','#10b981','#fff'];
+  const ps=Array.from({length:100},()=>({x:Math.random()*c.width,y:Math.random()*-c.height,r:Math.random()*5+3,d:Math.random()*2+1,col:colors[Math.floor(Math.random()*colors.length)],t:Math.random()*10-5,ta:Math.random()*.2-.1,op:1}));
+  let f=0;
+  function draw(){ctx.clearRect(0,0,c.width,c.height);ps.forEach(p=>{ctx.globalAlpha=p.op;ctx.fillStyle=p.col;ctx.beginPath();ctx.ellipse(p.x,p.y,p.r,p.r*.5,p.t,0,Math.PI*2);ctx.fill();p.y+=p.d;p.t+=p.ta;p.x+=Math.sin(f*.05+p.t)*.8;if(p.y>c.height)p.op-=.02;});ctx.globalAlpha=1;if(ps.some(p=>p.op>0)&&f<250){f++;requestAnimationFrame(draw);}else ctx.clearRect(0,0,c.width,c.height);}
+  draw();
+}
+
+let _loadCalled = false;
 async function load(){
-  if(_loaded)return;_loaded=true;
+  if(_loadCalled) return;
+  _loadCalled = true;
   const params=new URLSearchParams(window.location.search);
-  const code=params.get('uniquecode');
-  const email=params.get('email')||'';
+  const code=params.get('uniquecode')||params.get('unique_code');
+  const email=params.get('email');
   if(!code){window.location='/';return;}
   show('state-loading');
   try{
     let url=`/api/verify?uniquecode=${encodeURIComponent(code)}`;
-    if(email) url+=`&email=${encodeURIComponent(email)}`;
+    if(email)url+=`&email=${encodeURIComponent(email)}`;
     const res=await fetch(url);
     const data=await res.json();
     if(!data.success){
       document.getElementById('err-msg').textContent=data.error||'Unknown error';
       show('state-error');return;
     }
+    document.getElementById('i-code').textContent=data.order.uniqueCode||code;
+    document.getElementById('i-email').textContent=data.order.buyerEmail||email||'—';
+    document.getElementById('i-date').textContent=formatDate(data.order.soldAt);
     document.getElementById('acc-email').textContent=data.account.email;
     document.getElementById('acc-pass').textContent=data.account.password;
-    document.getElementById('i-orderid').textContent=data.order.orderId||'—';
-    document.getElementById('i-email').textContent=data.order.buyerEmail||email||'—';
-    document.getElementById('i-date').textContent=data.order.soldAt?new Date(data.order.soldAt).toLocaleString():'—';
+    document.getElementById('verified-label').textContent=S[lang][data.alreadyDelivered?'alreadyDelivered':'verified'];
     show('state-result');
-    if(!data.alreadyDelivered) launchConfetti();
+    if(!data.alreadyDelivered)launchConfetti();
   }catch(e){
-    document.getElementById('err-msg').textContent=e.message||'Network error';
+    _loadCalled = false;
+    document.getElementById('err-msg').textContent='Cannot connect to server.';
     show('state-error');
   }
 }
+load();
 </script>
 </body>
 </html>
