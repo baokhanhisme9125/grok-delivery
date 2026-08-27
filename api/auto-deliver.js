@@ -14,6 +14,7 @@ const {
   deleteAccountRow,
   saveOrder,
   findOrderByCode,
+  getAllDeliveredCodes,
   SHEET_NAME,
 } = require('../lib/sheets');
 
@@ -85,6 +86,9 @@ module.exports = async (req, res) => {
       data: sales[0],
     } : null;
 
+    // Read all delivered codes ONCE to avoid quota issues
+    const deliveredCodes = await getAllDeliveredCodes();
+
     for (const sale of sales) {
       const uniqueCode = sale.product_entry || '';
       const orderId = String(sale.invoice_id || '');
@@ -96,9 +100,8 @@ module.exports = async (req, res) => {
         continue;
       }
 
-      // Check if already delivered
-      const existing = await findOrderByCode(uniqueCode);
-      if (existing) {
+      // Check if already delivered (in-memory, no API call)
+      if (deliveredCodes.has(uniqueCode)) {
         skipped++;
         results.push({ orderId, uniqueCode: uniqueCode.slice(0, 8) + '...', status: 'already_delivered' });
         continue;
