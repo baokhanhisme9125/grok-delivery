@@ -55,11 +55,21 @@ module.exports = async (req, res) => {
     });
     const salesData = await salesRes.json();
 
-    if (!salesData.rows || !Array.isArray(salesData.rows)) {
+    // Debug: try different response field names
+    const sales = salesData.rows || salesData.content || salesData.sales || salesData.list || [];
+    
+    if (!Array.isArray(sales) || sales.length === 0) {
       return res.status(200).json({
         success: true,
         message: 'No sales data found',
-        rawResponse: salesData,
+        debug: {
+          keys: Object.keys(salesData),
+          cnt: salesData.cnt,
+          pages: salesData.pages,
+          retval: salesData.retval,
+          retdesc: salesData.retdesc,
+        },
+        rawResponse: JSON.stringify(salesData).slice(0, 2000),
       });
     }
 
@@ -69,7 +79,7 @@ module.exports = async (req, res) => {
     let errors = 0;
     let outOfStock = false;
 
-    for (const sale of salesData.rows) {
+    for (const sale of sales) {
       const uniqueCode = sale.unique_code || '';
       const orderId = String(sale.inv || sale.id_invoice || '');
       const buyerEmail = sale.email || '';
@@ -137,7 +147,7 @@ module.exports = async (req, res) => {
     return res.status(200).json({
       success: true,
       summary: {
-        totalSales: salesData.rows.length,
+        totalSales: sales.length,
         delivered,
         skipped,
         errors,
