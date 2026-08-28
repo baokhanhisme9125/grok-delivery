@@ -99,7 +99,7 @@ module.exports = async (req, res) => {
       account = await getNextAvailableAccount(SHEET_NAME);
       if (!account) {
         releaseLock();
-        return res.status(503).json({ success: false, outOfStock: true, productName: 'Grok Account', error: 'Out of stock. Contact support.' });
+        return res.status(503).json({ success: false, outOfStock: true, productName: 'Grok Account', orderId: platiInfo.orderId || null, error: 'Out of stock. Contact support.' });
       }
 
       // Deliver atomically — delete row + save order inside lock

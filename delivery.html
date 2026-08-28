@@ -161,6 +161,24 @@ body::before{content:'';position:fixed;inset:0;background:
     <a href="/" class="check-another">← <span data-i18n="backHome">Back to Home</span></a>
   </div>
 
+  <!-- Out of Stock -->
+  <div id="state-oos" style="display:none;text-align:center;padding:60px 20px">
+    <div style="font-size:48px;margin-bottom:16px">📦</div>
+    <div style="font-size:20px;font-weight:800;margin-bottom:8px" data-i18n="oosTitle">Temporarily Out of Stock</div>
+    <div style="font-size:14px;color:var(--muted);margin-bottom:8px" data-i18n="oosDesc">Your order is confirmed but accounts are being restocked. You will receive your account shortly.</div>
+    <div id="oos-product" style="font-size:13px;color:var(--amber);font-weight:700;margin-bottom:24px"></div>
+    <div class="order-link-box" id="oos-track-box" style="display:none;max-width:440px;margin:0 auto 20px;text-align:left">
+      <div class="order-link-top">
+        <div>
+          <div style="font-size:13px;font-weight:800;color:#7DD3FC;margin-bottom:4px">📦 <span data-i18n="orderLinkTitle">Track your order</span></div>
+          <div style="font-size:11.5px;color:var(--text2);font-weight:500" data-i18n="oosTrackDesc">Check back later or track your order on the marketplace</div>
+        </div>
+        <a id="oos-track-link" href="#" target="_blank" class="order-link-btn">🔗 <span data-i18n="orderLinkBtn">View Order</span></a>
+      </div>
+    </div>
+    <a href="/" class="check-another">← <span data-i18n="backHome">Back to Home</span></a>
+  </div>
+
   <!-- Result -->
   <div id="state-result" style="display:none">
     <div class="status-bar">
@@ -312,6 +330,9 @@ const S={
     contactBtn:'Contact',
     checkAnother:'Check Another',
     verified:'● Verified Paid',alreadyDelivered:'Previously Delivered',
+    oosTitle:'Temporarily Out of Stock',
+    oosDesc:'Your order is confirmed but accounts are being restocked. You will receive your account shortly.',
+    oosTrackDesc:'Check back later or track your order on the marketplace',
   },
   ru:{
     loading:'Проверка вашего заказа...',loadingDesc:'Проверяем Plati.market и выделяем аккаунт',
@@ -338,6 +359,9 @@ const S={
     contactBtn:'Написать',
     checkAnother:'Проверить другой заказ',
     verified:'● Оплата подтверждена',alreadyDelivered:'Ранее доставлено',
+    oosTitle:'Временно нет в наличии',
+    oosDesc:'Ваш заказ подтвержден, но аккаунты пополняются. Вы получите свой аккаунт в ближайшее время.',
+    oosTrackDesc:'Попробуйте позже или отследите заказ на маркетплейсе',
   }
 };
 
@@ -350,7 +374,7 @@ function setLang(l){
   document.getElementById('btn-ru').classList.toggle('active',l==='ru');
 }
 
-function show(id){['state-loading','state-error','state-result'].forEach(s=>document.getElementById(s).style.display='none');document.getElementById(id).style.display='block';}
+function show(id){['state-loading','state-error','state-oos','state-result'].forEach(s=>{const el=document.getElementById(s);if(el)el.style.display='none';});document.getElementById(id).style.display='block';}
 
 function formatDate(iso){try{return new Date(iso).toLocaleString(lang==='ru'?'ru-RU':'en-GB',{dateStyle:'medium',timeStyle:'short'});}catch{return iso;}}
 
@@ -399,6 +423,16 @@ async function load(){
     const res=await fetch(url);
     const data=await res.json();
     if(!data.success){
+      if(data.outOfStock){
+        document.getElementById('oos-product').textContent=data.productName||'';
+        // Show tracking link for out-of-stock
+        const oid=data.orderId||'';
+        if(oid){
+          document.getElementById('oos-track-link').href=`https://digiseller.me/info/buy.asp?id_i=${oid}&lang=en-US`;
+          document.getElementById('oos-track-box').style.display='block';
+        }
+        show('state-oos');return;
+      }
       document.getElementById('err-msg').textContent=data.error||'Unknown error';
       show('state-error');return;
     }
