@@ -8,6 +8,18 @@ const { getNextAvailableAccount, deleteAccountRow, saveOrder, findOrderByCode, S
 const _pending = new Map();
 const PENDING_TTL = 30_000;
 
+/* ── Global delivery mutex ────────────────────────────────────
+   Prevents two DIFFERENT orders from grabbing the same account.
+   Only one delivery can allocate an account at a time.
+─────────────────────────────────────────────────────────────── */
+let _deliveryLock = Promise.resolve();
+function acquireDeliveryLock() {
+  let release;
+  const prev = _deliveryLock;
+  _deliveryLock = new Promise(r => { release = r; });
+  return prev.then(() => release);
+}
+
 function cleanPending() {
   const now = Date.now();
   for (const [k, t] of _pending) { if (now - t > PENDING_TTL) _pending.delete(k); }
@@ -72,27 +84,41 @@ module.exports = async (req, res) => {
       }
     }
 
-    // Get account
-    const account = await getNextAvailableAccount(SHEET_NAME);
-    if (!account) {
-      return res.status(503).json({ success: false, outOfStock: true, productName: 'Grok Account', error: 'Out of stock. Contact support.' });
+    /* ── ATOMIC: acquire lock → get account → delete → save → release ── */
+    const releaseLock = await acquireDeliveryLock();
+    let account;
+    try {
+      // Re-check idempotency inside lock (another request may have just delivered)
+      const raceCheck = await findOrderByCode(code);
+      if (raceCheck) {
+        releaseLock();
+        return alreadyDeliveredResponse(res, raceCheck);
+      }
+
+      // Get account
+      account = await getNextAvailableAccount(SHEET_NAME);
+      if (!account) {
+        releaseLock();
+        return res.status(503).json({ success: false, outOfStock: true, productName: 'Grok Account', error: 'Out of stock. Contact support.' });
+      }
+
+      // Deliver atomically — delete row + save order inside lock
+      await deleteAccountRow(SHEET_NAME, account.rowIndex);
+      await saveOrder({
+        uniqueCode: code,
+        buyerEmail: platiInfo.buyer || emailParam || 'unknown',
+        accountEmail: account.email,
+        accountPassword: account.password,
+        orderId: platiInfo.orderId,
+        productType: 'grok',
+        productName: 'Grok Account',
+      });
+
+      releaseLock();
+    } catch (lockErr) {
+      releaseLock();
+      throw lockErr;
     }
-
-    // Race-condition guard
-    const raceCheck = await findOrderByCode(code);
-    if (raceCheck) return alreadyDeliveredResponse(res, raceCheck);
-
-    // Deliver
-    await deleteAccountRow(SHEET_NAME, account.rowIndex);
-    await saveOrder({
-      uniqueCode: code,
-      buyerEmail: platiInfo.buyer || emailParam || 'unknown',
-      accountEmail: account.email,
-      accountPassword: account.password,
-      orderId: platiInfo.orderId,
-      productType: 'grok',
-      productName: 'Grok Account',
-    });
 
     return res.status(200).json({
       success: true,
