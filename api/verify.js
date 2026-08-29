@@ -10,7 +10,7 @@
 const { verifyUniqueCode } = require('../lib/plati');
 const {
   getNextAvailableAccount, deleteAccountRow, saveOrder,
-  savePendingOrder, findOrderByCode, SHEET_NAME,
+  savePendingOrder, findOrderByCode, findRecentOrderByEmail, SHEET_NAME,
 } = require('../lib/sheets');
 
 const _pending = new Map();
@@ -102,6 +102,19 @@ module.exports = async (req, res) => {
     if (emailParam && buyerEmail && buyerEmail !== 'unknown') {
       if (emailParam !== buyerEmail) {
         return res.status(403).json({ success: false, error: 'Email does not match. / Email не совпадает.' });
+      }
+    }
+
+    // Cross-platform dedup (with resolved email from Plati, in case emailParam was empty)
+    const dedupEmail = emailParam || buyerEmail;
+    if (dedupEmail && dedupEmail !== 'unknown') {
+      const recentByEmail = await findRecentOrderByEmail(dedupEmail);
+      if (recentByEmail && !recentByEmail.isPending) {
+        console.log(`[verify] Cross-platform dedup (post-plati): email=${dedupEmail} already delivered via ${recentByEmail.uniqueCode}`);
+        return alreadyDeliveredResponse(res, recentByEmail);
+      }
+      if (recentByEmail && recentByEmail.isPending) {
+        return pendingResponse(res, recentByEmail);
       }
     }
 
