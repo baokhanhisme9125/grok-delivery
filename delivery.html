@@ -165,8 +165,16 @@ body::before{content:'';position:fixed;inset:0;background:
   <div id="state-oos" style="display:none;text-align:center;padding:60px 20px">
     <div style="font-size:48px;margin-bottom:16px">📦</div>
     <div style="font-size:20px;font-weight:800;margin-bottom:8px" data-i18n="oosTitle">Temporarily Out of Stock</div>
-    <div style="font-size:14px;color:var(--muted);margin-bottom:8px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.6" data-i18n="oosDesc">Your order is saved! We are restocking as fast as possible. Please refresh this page (F5) periodically — your account will appear automatically once available.</div>
+    <div style="font-size:14px;color:#C5C5E8;margin-bottom:14px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.6" data-i18n="oosDesc">Your order has been saved and will be delivered to you as soon as possible. Please save this link — once your order is ready, it will be delivered directly on this page. Refresh this page (F5) periodically — your account will appear automatically once available.</div>
     <div id="oos-product" style="font-size:13px;color:var(--amber);font-weight:700;margin-bottom:16px"></div>
+    <!-- Copy Link Box -->
+    <div id="oos-copy-box" style="background:rgba(125,211,252,.08);border:1px solid rgba(125,211,252,.22);border-radius:12px;padding:10px 14px;max-width:400px;margin:0 auto 18px;display:flex;align-items:center;gap:10px">
+      <div style="flex:1;min-width:0;text-align:left">
+        <div style="font-size:11px;font-weight:700;color:#7DD3FC;margin-bottom:3px">🔗 <span data-i18n="oosCopyTitle">Your delivery link</span></div>
+        <div id="oos-copy-url" style="font-size:10.5px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+      </div>
+      <button id="oos-copy-btn" onclick="copyOosLink()" style="background:rgba(125,211,252,.15);border:1px solid rgba(125,211,252,.3);border-radius:8px;color:#7DD3FC;padding:7px 14px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap;transition:.2s;font-family:inherit">📋 <span data-i18n="oosCopyBtn">Copy</span></button>
+    </div>
 
     <!-- Auto-refresh countdown -->
     <div style="background:rgba(255,183,77,.08);border:1px solid rgba(255,183,77,.2);border-radius:14px;padding:16px 20px;max-width:380px;margin:0 auto 20px;display:flex;align-items:center;gap:12px">
@@ -341,7 +349,8 @@ const S={
     checkAnother:'Check Another',
     verified:'● Verified Paid',alreadyDelivered:'Previously Delivered',
     oosTitle:'Temporarily Out of Stock',
-    oosDesc:'Your order is saved! We are restocking as fast as possible. Please refresh this page (F5) periodically — your account will appear automatically once available.',
+    oosDesc:'Your order has been saved and will be delivered to you as soon as possible. Please save this link — once your order is ready, it will be delivered directly on this page. Refresh this page (F5) periodically — your account will appear automatically once available.',
+    oosCopyTitle:'Your delivery link',oosCopyBtn:'Copy',
     oosTrackDesc:'Check back later or track your order on the marketplace',
     oosRefreshTitle:'Auto-refreshing...',
     oosRefreshDesc:'This page will refresh in',
@@ -372,7 +381,8 @@ const S={
     checkAnother:'Проверить другой заказ',
     verified:'● Оплата подтверждена',alreadyDelivered:'Ранее доставлено',
     oosTitle:'Временно нет в наличии',
-    oosDesc:'Ваш заказ сохранён! Мы пополняем запасы как можно быстрее. Пожалуйста, обновляйте эту страницу (F5) — ваш аккаунт появится автоматически, как только будет доступен.',
+    oosDesc:'Ваш заказ сохранён и будет доставлен вам как можно скорее. Сохраните эту ссылку — когда заказ будет готов, аккаунт появится прямо на этой странице. Обновляйте страницу (F5) — аккаунт появится автоматически.',
+    oosCopyTitle:'Ваша ссылка доставки',oosCopyBtn:'Копировать',
     oosTrackDesc:'Попробуйте позже или отследите заказ на маркетплейсе',
     oosRefreshTitle:'Автообновление...',
     oosRefreshDesc:'Страница обновится через',
@@ -424,6 +434,34 @@ function launchConfetti(){
 
 let _loadCalled = false;
 let _oosTimer = null;
+
+function initOosCopyUrl() {
+  const el = document.getElementById('oos-copy-url');
+  if (el) el.textContent = window.location.href;
+}
+
+function copyOosLink() {
+  const url = window.location.href;
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.getElementById('oos-copy-btn');
+    if (btn) {
+      const lang = document.documentElement.lang || 'en';
+      btn.innerHTML = '✅ ' + (lang === 'ru' ? 'Скопировано!' : 'Copied!');
+      btn.style.background = 'rgba(74,222,128,.15)';
+      btn.style.borderColor = 'rgba(74,222,128,.3)';
+      btn.style.color = '#4ADE80';
+      setTimeout(() => {
+        btn.innerHTML = '📋 <span data-i18n="oosCopyBtn">' + (lang === 'ru' ? 'Копировать' : 'Copy') + '</span>';
+        btn.style.background = 'rgba(125,211,252,.15)';
+        btn.style.borderColor = 'rgba(125,211,252,.3)';
+        btn.style.color = '#7DD3FC';
+      }, 2000);
+    }
+  }).catch(() => {
+    prompt('Copy this link:', url);
+  });
+}
+
 function startOosCountdown(){
   let sec=30;
   const el=document.getElementById('oos-countdown');
@@ -460,6 +498,7 @@ async function load(){
           document.getElementById('oos-track-box').style.display='block';
         }
         show('state-oos');
+        initOosCopyUrl();
         startOosCountdown();
         return;
       }
