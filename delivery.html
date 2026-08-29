@@ -165,8 +165,18 @@ body::before{content:'';position:fixed;inset:0;background:
   <div id="state-oos" style="display:none;text-align:center;padding:60px 20px">
     <div style="font-size:48px;margin-bottom:16px">📦</div>
     <div style="font-size:20px;font-weight:800;margin-bottom:8px" data-i18n="oosTitle">Temporarily Out of Stock</div>
-    <div style="font-size:14px;color:var(--muted);margin-bottom:8px" data-i18n="oosDesc">Your order is confirmed but accounts are being restocked. You will receive your account shortly.</div>
-    <div id="oos-product" style="font-size:13px;color:var(--amber);font-weight:700;margin-bottom:24px"></div>
+    <div style="font-size:14px;color:var(--muted);margin-bottom:8px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.6" data-i18n="oosDesc">Your order is saved! We are restocking as fast as possible. Please refresh this page (F5) periodically — your account will appear automatically once available.</div>
+    <div id="oos-product" style="font-size:13px;color:var(--amber);font-weight:700;margin-bottom:16px"></div>
+
+    <!-- Auto-refresh countdown -->
+    <div style="background:rgba(255,183,77,.08);border:1px solid rgba(255,183,77,.2);border-radius:14px;padding:16px 20px;max-width:380px;margin:0 auto 20px;display:flex;align-items:center;gap:12px">
+      <div style="font-size:24px;flex-shrink:0">🔄</div>
+      <div style="text-align:left">
+        <div style="font-size:13px;font-weight:700;color:var(--amber)" data-i18n="oosRefreshTitle">Auto-refreshing...</div>
+        <div style="font-size:11.5px;color:var(--text2);margin-top:2px"><span data-i18n="oosRefreshDesc">This page will refresh in</span> <b id="oos-countdown">30</b>s</div>
+      </div>
+    </div>
+
     <div class="order-link-box" id="oos-track-box" style="display:none;max-width:440px;margin:0 auto 20px;text-align:left">
       <div class="order-link-top">
         <div>
@@ -331,8 +341,10 @@ const S={
     checkAnother:'Check Another',
     verified:'● Verified Paid',alreadyDelivered:'Previously Delivered',
     oosTitle:'Temporarily Out of Stock',
-    oosDesc:'Your order is confirmed but accounts are being restocked. You will receive your account shortly.',
+    oosDesc:'Your order is saved! We are restocking as fast as possible. Please refresh this page (F5) periodically — your account will appear automatically once available.',
     oosTrackDesc:'Check back later or track your order on the marketplace',
+    oosRefreshTitle:'Auto-refreshing...',
+    oosRefreshDesc:'This page will refresh in',
   },
   ru:{
     loading:'Проверка вашего заказа...',loadingDesc:'Проверяем Plati.market и выделяем аккаунт',
@@ -360,8 +372,10 @@ const S={
     checkAnother:'Проверить другой заказ',
     verified:'● Оплата подтверждена',alreadyDelivered:'Ранее доставлено',
     oosTitle:'Временно нет в наличии',
-    oosDesc:'Ваш заказ подтвержден, но аккаунты пополняются. Вы получите свой аккаунт в ближайшее время.',
+    oosDesc:'Ваш заказ сохранён! Мы пополняем запасы как можно быстрее. Пожалуйста, обновляйте эту страницу (F5) — ваш аккаунт появится автоматически, как только будет доступен.',
     oosTrackDesc:'Попробуйте позже или отследите заказ на маркетплейсе',
+    oosRefreshTitle:'Автообновление...',
+    oosRefreshDesc:'Страница обновится через',
   }
 };
 
@@ -409,6 +423,21 @@ function launchConfetti(){
 }
 
 let _loadCalled = false;
+let _oosTimer = null;
+function startOosCountdown(){
+  let sec=30;
+  const el=document.getElementById('oos-countdown');
+  if(_oosTimer) clearInterval(_oosTimer);
+  _oosTimer=setInterval(()=>{
+    sec--;
+    if(el) el.textContent=sec;
+    if(sec<=0){
+      clearInterval(_oosTimer);
+      _loadCalled=false;
+      load();
+    }
+  },1000);
+}
 async function load(){
   if(_loadCalled) return;
   _loadCalled = true;
@@ -425,24 +454,25 @@ async function load(){
     if(!data.success){
       if(data.outOfStock){
         document.getElementById('oos-product').textContent=data.productName||'';
-        // Show tracking link for out-of-stock
         const oid=data.orderId||'';
         if(oid){
           document.getElementById('oos-track-link').href=`https://digiseller.me/info/buy.asp?id_i=${oid}&lang=en-US`;
           document.getElementById('oos-track-box').style.display='block';
         }
-        show('state-oos');return;
+        show('state-oos');
+        startOosCountdown();
+        return;
       }
       document.getElementById('err-msg').textContent=data.error||'Unknown error';
       show('state-error');return;
     }
+    if(_oosTimer){clearInterval(_oosTimer);_oosTimer=null;}
     document.getElementById('i-code').textContent=data.order.uniqueCode||code;
     document.getElementById('i-email').textContent=data.order.buyerEmail||email||'—';
     document.getElementById('i-date').textContent=formatDate(data.order.soldAt);
     document.getElementById('acc-email').textContent=data.account.email;
     document.getElementById('acc-pass').textContent=data.account.password;
     document.getElementById('verified-label').textContent=S[lang][data.alreadyDelivered?'alreadyDelivered':'verified'];
-    // Set order tracking link (Digiseller format, same as CapCut)
     const orderId = data.order.orderId || '';
     if(orderId){
       document.getElementById('order-link').href = `https://digiseller.me/info/buy.asp?id_i=${orderId}&lang=en-US`;

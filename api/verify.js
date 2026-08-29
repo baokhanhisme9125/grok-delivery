@@ -1,17 +1,22 @@
 /**
  * /api/verify?uniquecode=XXX&email=YYY
  * Grok account delivery via Plati.market (Digiseller API)
+ *
+ * Out-of-stock flow:
+ *   1. No account available → save pending order (column C blank) → return OOS
+ *   2. Seller fills column C manually
+ *   3. Customer refreshes → finds pending order with C filled → delivers account
  */
 const { verifyUniqueCode } = require('../lib/plati');
-const { getNextAvailableAccount, deleteAccountRow, saveOrder, findOrderByCode, SHEET_NAME } = require('../lib/sheets');
+const {
+  getNextAvailableAccount, deleteAccountRow, saveOrder,
+  savePendingOrder, findOrderByCode, SHEET_NAME,
+} = require('../lib/sheets');
 
 const _pending = new Map();
 const PENDING_TTL = 30_000;
 
-/* ── Global delivery mutex ────────────────────────────────────
-   Prevents two DIFFERENT orders from grabbing the same account.
-   Only one delivery can allocate an account at a time.
-─────────────────────────────────────────────────────────────── */
+/* ── Global delivery mutex ── */
 let _deliveryLock = Promise.resolve();
 function acquireDeliveryLock() {
   let release;
@@ -38,6 +43,17 @@ function alreadyDeliveredResponse(res, order) {
   });
 }
 
+function pendingResponse(res, order) {
+  return res.status(503).json({
+    success: false,
+    outOfStock: true,
+    isPending: true,
+    productName: order.productName || 'Grok Account',
+    orderId: order.orderId || null,
+    error: 'Out of stock — your order is saved. Please refresh (F5) periodically to receive your account.',
+  });
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -55,7 +71,8 @@ module.exports = async (req, res) => {
     if (_pending.has(code)) {
       await new Promise(r => setTimeout(r, 3000));
       const existing = await findOrderByCode(code);
-      if (existing) return alreadyDeliveredResponse(res, existing);
+      if (existing && !existing.isPending) return alreadyDeliveredResponse(res, existing);
+      if (existing && existing.isPending) return pendingResponse(res, existing);
       return res.status(429).json({ success: false, error: 'Order is being processed. Please wait.' });
     }
     _pending.set(code, Date.now());
@@ -67,6 +84,10 @@ module.exports = async (req, res) => {
         if (emailParam !== existing.buyerEmail.toLowerCase()) {
           return res.status(403).json({ success: false, error: 'Email does not match. / Email не совпадает.' });
         }
+      }
+      // If pending (C blank) → seller hasn't filled account yet → return OOS
+      if (existing.isPending) {
+        return pendingResponse(res, existing);
       }
       return alreadyDeliveredResponse(res, existing);
     }
@@ -88,18 +109,35 @@ module.exports = async (req, res) => {
     const releaseLock = await acquireDeliveryLock();
     let account;
     try {
-      // Re-check idempotency inside lock (another request may have just delivered)
+      // Re-check idempotency inside lock
       const raceCheck = await findOrderByCode(code);
-      if (raceCheck) {
+      if (raceCheck && !raceCheck.isPending) {
         releaseLock();
         return alreadyDeliveredResponse(res, raceCheck);
+      }
+      if (raceCheck && raceCheck.isPending) {
+        releaseLock();
+        return pendingResponse(res, raceCheck);
       }
 
       // Get account
       account = await getNextAvailableAccount(SHEET_NAME);
       if (!account) {
+        // ── OUT OF STOCK: save pending order (C blank) ──
+        await savePendingOrder({
+          uniqueCode: code,
+          buyerEmail: platiInfo.buyer || emailParam || 'unknown',
+          orderId: platiInfo.orderId,
+          productType: 'grok',
+          productName: 'Grok Account',
+        });
         releaseLock();
-        return res.status(503).json({ success: false, outOfStock: true, productName: 'Grok Account', orderId: platiInfo.orderId || null, error: 'Out of stock. Contact support.' });
+        console.log(`[verify] OOS — saved pending order for code=${code}`);
+        return res.status(503).json({
+          success: false, outOfStock: true, isPending: true,
+          productName: 'Grok Account', orderId: platiInfo.orderId || null,
+          error: 'Out of stock — your order is saved. Please refresh (F5) periodically to receive your account.',
+        });
       }
 
       // Deliver atomically — delete row + save order inside lock
