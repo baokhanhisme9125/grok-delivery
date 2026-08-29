@@ -162,9 +162,6 @@ body::before{content:'';position:fixed;inset:0;background:
   </div>
 
   <style>
-    body:has(#state-oos:not([style*="display: none"])) { background: #0c0c0e; }
-    body:has(#state-oos:not([style*="display: none"])) .orb,
-    body:has(#state-oos:not([style*="display: none"]))::before { display: none; }
     @keyframes pulse-amber { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
     .oos-btn-primary { background:#EF9F27; border:none; color:#412402; border-radius:8px; padding:8px 14px; font-weight:500; cursor:pointer; transition:all 0.15s ease; display:inline-flex; align-items:center; gap:6px; font-size:12px; font-family:inherit; }
     .oos-btn-primary:hover { background:#f5aa3d; }
@@ -187,7 +184,7 @@ body::before{content:'';position:fixed;inset:0;background:
     <!-- Main Card -->
     <div style="background:#141416;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:22px 24px;text-align:left;margin-bottom:12px">
       <div style="font-size:14px;line-height:1.65;color:#9a9aa2;max-width:42ch;margin-bottom:18px" data-i18n="oosDesc">
-        Your order has been saved and will be delivered to you as soon as possible. Please save this link — once your order is ready, it will be delivered directly on this page. Refresh this page (F5) periodically — your account will appear automatically once available.
+        Your order has been saved and will be delivered to you as soon as possible. Please save this link. Once your order is ready, it will be delivered directly on this page. Refresh this page (F5) periodically. Your account will appear automatically once available.
       </div>
       <div style="height:1px;background:rgba(255,255,255,0.06);margin-bottom:18px"></div>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
@@ -380,7 +377,7 @@ const S={
     checkAnother:'Check Another',
     verified:'● Verified Paid',alreadyDelivered:'Previously Delivered',
     oosTitle:'Temporarily Out of Stock',
-    oosDesc:'Your order has been saved and will be delivered to you as soon as possible. Please save this link — once your order is ready, it will be delivered directly on this page. Refresh this page (F5) periodically — your account will appear automatically once available.',
+    oosDesc:'Your order has been saved and will be delivered to you as soon as possible. Please save this link. Once your order is ready, it will be delivered directly on this page. Refresh this page (F5) periodically. Your account will appear automatically once available.',
     oosCopyTitle:'Your delivery link',oosCopyBtn:'Save link',
     oosTrackDesc:'Check back later or track your order on the marketplace',
     oosRefreshTitle:'Auto-refreshing...',
@@ -412,7 +409,7 @@ const S={
     checkAnother:'Проверить другой заказ',
     verified:'● Оплата подтверждена',alreadyDelivered:'Ранее доставлено',
     oosTitle:'Временно нет в наличии',
-    oosDesc:'Ваш заказ сохранён и будет доставлен вам как можно скорее. Сохраните эту ссылку — когда заказ будет готов, аккаунт появится прямо на этой странице. Обновляйте страницу (F5) — аккаунт появится автоматически.',
+    oosDesc:'Ваш заказ сохранён и будет доставлен вам как можно скорее. Сохраните эту ссылку. Когда заказ будет готов, аккаунт появится прямо на этой странице. Обновляйте страницу (F5). Аккаунт появится автоматически.',
     oosCopyTitle:'Ваша ссылка доставки',oosCopyBtn:'Сохранить',
     oosTrackDesc:'Попробуйте позже или отследите заказ на маркетплейсе',
     oosRefreshTitle:'Автообновление...',
