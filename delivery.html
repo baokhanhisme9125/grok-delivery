@@ -165,33 +165,27 @@ body::before{content:'';position:fixed;inset:0;background:
   <div id="state-oos" style="display:none;text-align:center;padding:60px 20px">
     <div style="font-size:48px;margin-bottom:16px">📦</div>
     <div style="font-size:20px;font-weight:800;margin-bottom:8px" data-i18n="oosTitle">Temporarily Out of Stock</div>
-    <div style="font-size:14px;color:#C5C5E8;margin-bottom:14px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.6" data-i18n="oosDesc">Your order has been saved and will be delivered to you as soon as possible. Please save this link — once your order is ready, it will be delivered directly on this page. Refresh this page (F5) periodically — your account will appear automatically once available.</div>
     <div id="oos-product" style="font-size:13px;color:var(--amber);font-weight:700;margin-bottom:16px"></div>
-    <!-- Copy Link Box -->
-    <div id="oos-copy-box" style="background:rgba(125,211,252,.08);border:1px solid rgba(125,211,252,.22);border-radius:12px;padding:10px 14px;max-width:400px;margin:0 auto 18px;display:flex;align-items:center;gap:10px">
-      <div style="flex:1;min-width:0;text-align:left">
-        <div style="font-size:11px;font-weight:700;color:#7DD3FC;margin-bottom:3px">🔗 <span data-i18n="oosCopyTitle">Your delivery link</span></div>
-        <div id="oos-copy-url" style="font-size:10.5px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+    <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:16px;max-width:440px;margin:0 auto 20px;text-align:left;overflow:hidden">
+      <div style="padding:18px 20px 14px;font-size:13px;color:#C5C5E8;line-height:1.7" data-i18n="oosDesc">Your order has been saved and will be delivered to you as soon as possible. Please save this link — once your order is ready, it will be delivered directly on this page. Refresh this page (F5) periodically — your account will appear automatically once available.</div>
+      <div style="padding:0 20px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <div style="font-size:12px;font-weight:700;color:#7DD3FC">🔗 <span data-i18n="oosCopyTitle">Your delivery link</span></div>
+        <button id="oos-copy-btn" onclick="copyOosLink()" style="background:rgba(125,211,252,.12);border:1px solid rgba(125,211,252,.25);border-radius:8px;color:#7DD3FC;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:.2s;font-family:inherit">📋 <span data-i18n="oosCopyBtn">Save link</span></button>
       </div>
-      <button id="oos-copy-btn" onclick="copyOosLink()" style="background:rgba(125,211,252,.15);border:1px solid rgba(125,211,252,.3);border-radius:8px;color:#7DD3FC;padding:7px 14px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap;transition:.2s;font-family:inherit">📋 <span data-i18n="oosCopyBtn">Copy</span></button>
+      <div style="height:1px;background:var(--border)"></div>
+      <div id="oos-track-box" style="display:none;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <div>
+          <div style="font-size:13px;font-weight:800;color:#7DD3FC;margin-bottom:3px">📦 <span data-i18n="orderLinkTitle">Track your order</span></div>
+          <div style="font-size:11px;color:var(--text2);font-weight:500" data-i18n="oosTrackDesc">Check back later or track your order on the marketplace</div>
+        </div>
+        <a id="oos-track-link" href="#" target="_blank" style="background:rgba(125,211,252,.12);border:1px solid rgba(125,211,252,.25);border-radius:8px;color:#7DD3FC;padding:6px 14px;font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap">🔗 <span data-i18n="orderLinkBtn">View Order</span></a>
+      </div>
     </div>
-
-    <!-- Auto-refresh countdown -->
     <div style="background:rgba(255,183,77,.08);border:1px solid rgba(255,183,77,.2);border-radius:14px;padding:16px 20px;max-width:380px;margin:0 auto 20px;display:flex;align-items:center;gap:12px">
       <div style="font-size:24px;flex-shrink:0">🔄</div>
       <div style="text-align:left">
         <div style="font-size:13px;font-weight:700;color:var(--amber)" data-i18n="oosRefreshTitle">Auto-refreshing...</div>
         <div style="font-size:11.5px;color:var(--text2);margin-top:2px"><span data-i18n="oosRefreshDesc">This page will refresh in</span> <b id="oos-countdown">30</b>s</div>
-      </div>
-    </div>
-
-    <div class="order-link-box" id="oos-track-box" style="display:none;max-width:440px;margin:0 auto 20px;text-align:left">
-      <div class="order-link-top">
-        <div>
-          <div style="font-size:13px;font-weight:800;color:#7DD3FC;margin-bottom:4px">📦 <span data-i18n="orderLinkTitle">Track your order</span></div>
-          <div style="font-size:11.5px;color:var(--text2);font-weight:500" data-i18n="oosTrackDesc">Check back later or track your order on the marketplace</div>
-        </div>
-        <a id="oos-track-link" href="#" target="_blank" class="order-link-btn">🔗 <span data-i18n="orderLinkBtn">View Order</span></a>
       </div>
     </div>
     <a href="/" class="check-another">← <span data-i18n="backHome">Back to Home</span></a>
@@ -350,7 +344,7 @@ const S={
     verified:'● Verified Paid',alreadyDelivered:'Previously Delivered',
     oosTitle:'Temporarily Out of Stock',
     oosDesc:'Your order has been saved and will be delivered to you as soon as possible. Please save this link — once your order is ready, it will be delivered directly on this page. Refresh this page (F5) periodically — your account will appear automatically once available.',
-    oosCopyTitle:'Your delivery link',oosCopyBtn:'Copy',
+    oosCopyTitle:'Your delivery link',oosCopyBtn:'Save link',
     oosTrackDesc:'Check back later or track your order on the marketplace',
     oosRefreshTitle:'Auto-refreshing...',
     oosRefreshDesc:'This page will refresh in',
@@ -382,7 +376,7 @@ const S={
     verified:'● Оплата подтверждена',alreadyDelivered:'Ранее доставлено',
     oosTitle:'Временно нет в наличии',
     oosDesc:'Ваш заказ сохранён и будет доставлен вам как можно скорее. Сохраните эту ссылку — когда заказ будет готов, аккаунт появится прямо на этой странице. Обновляйте страницу (F5) — аккаунт появится автоматически.',
-    oosCopyTitle:'Ваша ссылка доставки',oosCopyBtn:'Копировать',
+    oosCopyTitle:'Ваша ссылка доставки',oosCopyBtn:'Сохранить',
     oosTrackDesc:'Попробуйте позже или отследите заказ на маркетплейсе',
     oosRefreshTitle:'Автообновление...',
     oosRefreshDesc:'Страница обновится через',
@@ -451,7 +445,7 @@ function copyOosLink() {
       btn.style.borderColor = 'rgba(74,222,128,.3)';
       btn.style.color = '#4ADE80';
       setTimeout(() => {
-        btn.innerHTML = '📋 <span data-i18n="oosCopyBtn">' + (lang === 'ru' ? 'Копировать' : 'Copy') + '</span>';
+        btn.innerHTML = '📋 <span data-i18n="oosCopyBtn">' + (lang === 'ru' ? 'Сохранить' : 'Save link') + '</span>';
         btn.style.background = 'rgba(125,211,252,.15)';
         btn.style.borderColor = 'rgba(125,211,252,.3)';
         btn.style.color = '#7DD3FC';
