@@ -162,11 +162,9 @@ body::before{content:'';position:fixed;inset:0;background:
   </div>
 
   <style>
-    @keyframes pulse-amber { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
-    .oos-btn-primary { background:#EF9F27; border:none; color:#412402; border-radius:8px; padding:8px 14px; font-weight:500; cursor:pointer; transition:all 0.15s ease; display:inline-flex; align-items:center; gap:6px; font-size:12px; font-family:inherit; }
-    .oos-btn-primary:hover { background:#f5aa3d; }
-    .oos-btn-ghost { background:transparent; border:1px solid rgba(255,255,255,0.14); color:#b4b4bc; border-radius:8px; padding:7px 14px; font-weight:500; cursor:pointer; transition:all 0.15s ease; text-decoration:none; display:inline-flex; align-items:center; gap:6px; font-size:12px; }
-    .oos-btn-ghost:hover { border-color:rgba(255,255,255,0.22); color:#ededf0; }
+    @keyframes pulse-pink { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+    .oos-btn-primary { background:linear-gradient(135deg, #a855f7, #ec4899); border:none; color:#ffffff; border-radius:8px; padding:8px 14px; font-weight:500; cursor:pointer; transition:all 0.15s ease; display:inline-flex; align-items:center; gap:6px; font-size:12px; font-family:inherit; text-decoration:none; }
+    .oos-btn-primary:hover { opacity:0.9; }
   </style>
 
   <div id="state-oos" style="display:none;max-width:460px;margin:0 auto;padding:40px 32px;text-align:center">
@@ -175,7 +173,7 @@ body::before{content:'';position:fixed;inset:0;background:
       <div style="width:44px;height:44px;border-radius:10px;background:rgba(239,159,39,0.1);border:1px solid rgba(239,159,39,0.25);display:flex;align-items:center;justify-content:center;color:#EF9F27;margin-bottom:18px">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.4 7.5 4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.29 7 12 12 20.71 7"/><polyline points="12 22 12 12"/></svg>
       </div>
-      <div style="font-size:11px;letter-spacing:0.04em;color:#EF9F27;background:rgba(239,159,39,0.1);padding:4px 10px;border-radius:20px;text-transform:uppercase;font-weight:500;margin-bottom:12px" data-i18n="oosTitle">
+      <div style="font-size:11px;letter-spacing:0.04em;color:#d946ef;background:rgba(217,70,239,0.1);padding:4px 10px;border-radius:20px;text-transform:uppercase;font-weight:500;margin-bottom:12px" data-i18n="oosTitle">
         Temporarily Out of Stock
       </div>
       <div id="oos-product" style="font-size:21px;font-weight:500;color:#ededf0"></div>
@@ -183,7 +181,7 @@ body::before{content:'';position:fixed;inset:0;background:
 
     <!-- Main Card -->
     <div style="background:#141416;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:22px 24px;text-align:left;margin-bottom:12px">
-      <div style="font-size:14px;line-height:1.65;color:#9a9aa2;max-width:42ch;margin-bottom:18px" data-i18n="oosDesc">
+      <div style="font-size:14px;line-height:1.65;color:#C5C5E8;max-width:42ch;margin-bottom:18px" data-i18n="oosDesc">
         Your order has been saved and will be delivered to you as soon as possible. Please save this link. Once your order is ready, it will be delivered directly on this page. Refresh this page (F5) periodically. Your account will appear automatically once available.
       </div>
       <div style="height:1px;background:rgba(255,255,255,0.06);margin-bottom:18px"></div>
@@ -202,12 +200,12 @@ body::before{content:'';position:fixed;inset:0;background:
     <!-- Track Order Card -->
     <div id="oos-track-box" style="display:none;background:transparent;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:18px 24px;text-align:left">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <svg style="color:#d4d4d8" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
-        <div style="font-size:14px;font-weight:500;color:#d4d4d8" data-i18n="orderLinkTitle">Track your order</div>
+        <svg style="color:#E2E8F0" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+        <div style="font-size:14px;font-weight:500;color:#E2E8F0" data-i18n="orderLinkTitle">Track your order</div>
       </div>
       <div style="margin-left:24px">
         <div style="font-size:13px;color:#6e6e76;margin-bottom:12px" data-i18n="oosTrackDesc">Check back later or track your order on the marketplace</div>
-        <a id="oos-track-link" href="#" target="_blank" class="oos-btn-ghost">
+        <a id="oos-track-link" href="#" target="_blank" class="oos-btn-primary">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
           <span data-i18n="orderLinkBtn">View Order</span>
         </a>
@@ -216,7 +214,7 @@ body::before{content:'';position:fixed;inset:0;background:
 
     <!-- Footer Auto Refresh -->
     <div style="margin-top:28px;border-top:1px solid rgba(255,255,255,0.06);padding-top:22px;display:flex;align-items:center;justify-content:center;gap:8px">
-      <div style="width:6px;height:6px;border-radius:50%;background:#EF9F27;animation:pulse-amber 2s ease-in-out infinite"></div>
+      <div style="width:6px;height:6px;border-radius:50%;background:#d946ef;animation:pulse-pink 2s ease-in-out infinite"></div>
       <div style="font-size:12px;color:#5c5c64">
         <span data-i18n="oosRefreshDesc">Auto-refreshing in</span> <b id="oos-countdown" style="font-weight:500">30</b>s
       </div>
