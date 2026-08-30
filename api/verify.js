@@ -10,7 +10,7 @@
 const { verifyUniqueCode } = require('../lib/plati');
 const {
   getNextAvailableAccount, deleteAccountRow, saveOrder,
-  savePendingOrder, findOrderByCode, findRecentOrderByEmail, SHEET_NAME,
+  savePendingOrder, findOrderByCode, SHEET_NAME,
 } = require('../lib/sheets');
 
 const _pending = new Map();
@@ -105,18 +105,6 @@ module.exports = async (req, res) => {
       }
     }
 
-    // Cross-platform dedup (with resolved email from Plati, in case emailParam was empty)
-    const dedupEmail = emailParam || buyerEmail;
-    if (dedupEmail && dedupEmail !== 'unknown') {
-      const recentByEmail = await findRecentOrderByEmail(dedupEmail);
-      if (recentByEmail && !recentByEmail.isPending) {
-        console.log(`[verify] Cross-platform dedup (post-plati): email=${dedupEmail} already delivered via ${recentByEmail.uniqueCode}`);
-        return alreadyDeliveredResponse(res, recentByEmail);
-      }
-      if (recentByEmail && recentByEmail.isPending) {
-        return pendingResponse(res, recentByEmail);
-      }
-    }
 
     /* ── ATOMIC: acquire lock → get account → delete → save → release ── */
     const releaseLock = await acquireDeliveryLock();
