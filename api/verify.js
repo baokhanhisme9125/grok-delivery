@@ -94,8 +94,45 @@ module.exports = async (req, res) => {
 
     // Verify via Digiseller
     let platiInfo;
-    try { platiInfo = await verifyUniqueCode(code); }
-    catch (err) { return res.status(400).json({ success: false, error: err.message }); }
+    try {
+      platiInfo = await verifyUniqueCode(code);
+    } catch (err) {
+      // If Digiseller says "не найден unique_code" (retval:2) for a valid-looking 16-char hex code,
+      // it means the code was already verified/consumed on Digiseller side (e.g. auto-verification)
+      // but we never recorded it. Save a pending order so seller can manually deliver.
+      const looksLikePlatiCode = /^[0-9A-Fa-f]{16}$/.test(code);
+      const isNotFound = err.message && (err.message.includes('не найден') || err.message.includes('unique_code'));
+      if (looksLikePlatiCode && isNotFound) {
+        console.warn(`[verify] Digiseller retval:2 for code=${code} email=${emailParam} — saving pending for manual delivery`);
+        const releaseLockPending = await acquireDeliveryLock();
+        try {
+          // Double-check it wasn't saved while waiting for lock
+          const raceExisting = await findOrderByCode(code);
+          if (raceExisting) {
+            releaseLockPending();
+            if (raceExisting.isPending) return pendingResponse(res, raceExisting);
+            return alreadyDeliveredResponse(res, raceExisting);
+          }
+          await savePendingOrder({
+            uniqueCode: code,
+            buyerEmail: emailParam || 'unknown',
+            orderId: '',
+            productType: 'grok',
+            productName: 'Grok Account',
+          });
+          releaseLockPending();
+        } catch (pendingErr) {
+          releaseLockPending();
+          console.error('[verify] Failed to save pending for unverified code:', pendingErr.message);
+        }
+        return res.status(503).json({
+          success: false, outOfStock: true, isPending: true,
+          productName: 'Grok Account', orderId: null,
+          error: 'Your order was received. Please wait — an account will be delivered to this page shortly.',
+        });
+      }
+      return res.status(400).json({ success: false, error: err.message });
+    }
 
     // Email check
     const buyerEmail = (platiInfo.buyer || '').toLowerCase();
