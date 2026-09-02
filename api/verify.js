@@ -158,8 +158,8 @@ module.exports = async (req, res) => {
         return pendingResponse(res, raceCheck);
       }
 
-      // Get account
-      account = await getNextAvailableAccount(SHEET_NAME);
+      // Get account (passes uniqueCode for optimistic lock claim marker)
+      account = await getNextAvailableAccount(SHEET_NAME, code);
       if (!account) {
         // ── OUT OF STOCK: save pending order (C blank) ──
         await savePendingOrder({

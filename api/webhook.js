@@ -86,7 +86,7 @@ module.exports = async (req, res) => {
   }
 
   // ── 3. Get account from Grok Account sheet ───────────────────────────
-  const account = await getNextAvailableAccount(SHEET_NAME);
+  const account = await getNextAvailableAccount(SHEET_NAME, unique_code);
   if (!account) {
     // Out of stock — save pending so customer sees OOS screen when they visit delivery page
     if (!existingOrder) {
