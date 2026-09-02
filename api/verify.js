@@ -59,8 +59,14 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const code       = (req.query.uniquecode || '').trim();
-  const emailParam = (req.query.email      || '').trim().toLowerCase();
+  let code       = (req.query.uniquecode || '').trim();
+  let emailParam = (req.query.email      || '').trim().toLowerCase();
+
+  // ── Auto-correct swapped fields ──────────────────────────────────────
+  if (code.includes('@') && /^[0-9A-Fa-f]{16}$/i.test(emailParam)) {
+    console.log(`[verify] Detected swapped fields — auto-correcting.`);
+    const tmp = code; code = emailParam; emailParam = tmp;
+  }
 
   if (!code || code.length < 5) {
     return res.status(400).json({ success: false, error: 'Missing or invalid unique code.' });
