@@ -107,7 +107,8 @@ module.exports = async (req, res) => {
   }
 
   // ── 4. Delete from sheet + save delivered order ───────────────────────
-  await deleteAccountRow(SHEET_NAME, account.rowIndex);
+  await deleteAccountRow(SHEET_NAME, account.rowIndex, account.claimMark);
+
   await saveOrder({
     uniqueCode:      unique_code,
     buyerEmail:      email || 'unknown',

@@ -185,7 +185,7 @@ module.exports = async (req, res) => {
       }
 
       // Deliver atomically — delete row + save order inside lock
-      await deleteAccountRow(SHEET_NAME, account.rowIndex);
+      await deleteAccountRow(SHEET_NAME, account.rowIndex, account.claimMark);
       await saveOrder({
         uniqueCode: code,
         buyerEmail: platiInfo.buyer || emailParam || 'unknown',
