@@ -2,33 +2,14 @@
  * /api/verify?uniquecode=XXX&email=YYY
  * Grok account delivery via Plati.market (Digiseller API)
  *
- * Out-of-stock flow:
- *   1. No account available → save pending order (column C blank) → return OOS
- *   2. Seller fills column C manually
- *   3. Customer refreshes → finds pending order with C filled → delivers account
+ * Race-condition safe: CLAIMED marker + double-check + post-save dedup
  */
 const { verifyUniqueCode } = require('../lib/plati');
 const {
   getNextAvailableAccount, deleteAccountRow, saveOrder,
-  savePendingOrder, findOrderByCode, SHEET_NAME,
+  savePendingOrder, findOrderByCode, findAllOrdersByCode,
+  deleteOrderRow, SHEET_NAME,
 } = require('../lib/sheets');
-
-const _pending = new Map();
-const PENDING_TTL = 30_000;
-
-/* ── Global delivery mutex ── */
-let _deliveryLock = Promise.resolve();
-function acquireDeliveryLock() {
-  let release;
-  const prev = _deliveryLock;
-  _deliveryLock = new Promise(r => { release = r; });
-  return prev.then(() => release);
-}
-
-function cleanPending() {
-  const now = Date.now();
-  for (const [k, t] of _pending) { if (now - t > PENDING_TTL) _pending.delete(k); }
-}
 
 function alreadyDeliveredResponse(res, order) {
   return res.status(200).json({
@@ -45,9 +26,7 @@ function alreadyDeliveredResponse(res, order) {
 
 function pendingResponse(res, order) {
   return res.status(503).json({
-    success: false,
-    outOfStock: true,
-    isPending: true,
+    success: false, outOfStock: true, isPending: true,
     productName: order.productName || 'Grok Account',
     orderId: order.orderId || null,
     error: 'Out of stock — your order is saved. Please refresh (F5) periodically to receive your account.',
@@ -62,9 +41,8 @@ module.exports = async (req, res) => {
   let code       = (req.query.uniquecode || '').trim();
   let emailParam = (req.query.email      || '').trim().toLowerCase();
 
-  // ── Auto-correct swapped fields ──────────────────────────────────────
+  // Auto-correct swapped fields
   if (code.includes('@') && /^[0-9A-Fa-f]{16}$/i.test(emailParam)) {
-    console.log(`[verify] Detected swapped fields — auto-correcting.`);
     const tmp = code; code = emailParam; emailParam = tmp;
   }
 
@@ -73,17 +51,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    cleanPending();
-    if (_pending.has(code)) {
-      await new Promise(r => setTimeout(r, 3000));
-      const existing = await findOrderByCode(code);
-      if (existing && !existing.isPending) return alreadyDeliveredResponse(res, existing);
-      if (existing && existing.isPending) return pendingResponse(res, existing);
-      return res.status(429).json({ success: false, error: 'Order is being processed. Please wait.' });
-    }
-    _pending.set(code, Date.now());
-
-    // Idempotency check
+    /* ── 1. Idempotency check ──────────────────────────────────────── */
     const existing = await findOrderByCode(code);
     if (existing) {
       if (emailParam && existing.buyerEmail && existing.buyerEmail !== 'unknown') {
@@ -91,56 +59,21 @@ module.exports = async (req, res) => {
           return res.status(403).json({ success: false, error: 'Email does not match. / Email не совпадает.' });
         }
       }
-      // If pending (C blank) → seller hasn't filled account yet → return OOS
-      if (existing.isPending) {
-        return pendingResponse(res, existing);
-      }
+      if (existing.isPending) return pendingResponse(res, existing);
       return alreadyDeliveredResponse(res, existing);
     }
 
-    // Verify via Digiseller
+    /* ── 2. Verify via Digiseller (includes product whitelist + refund + unknown buyer check) ── */
     let platiInfo;
     try {
       platiInfo = await verifyUniqueCode(code);
     } catch (err) {
-      // If Digiseller says "не найден unique_code" (retval:2) for a valid-looking 16-char hex code,
-      // it means the code was already verified/consumed on Digiseller side (e.g. auto-verification)
-      // but we never recorded it. Save a pending order so seller can manually deliver.
-      const looksLikePlatiCode = /^[0-9A-Fa-f]{16}$/.test(code);
-      const isNotFound = err.message && (err.message.includes('не найден') || err.message.includes('unique_code'));
-      if (looksLikePlatiCode && isNotFound) {
-        console.warn(`[verify] Digiseller retval:2 for code=${code} email=${emailParam} — saving pending for manual delivery`);
-        const releaseLockPending = await acquireDeliveryLock();
-        try {
-          // Double-check it wasn't saved while waiting for lock
-          const raceExisting = await findOrderByCode(code);
-          if (raceExisting) {
-            releaseLockPending();
-            if (raceExisting.isPending) return pendingResponse(res, raceExisting);
-            return alreadyDeliveredResponse(res, raceExisting);
-          }
-          await savePendingOrder({
-            uniqueCode: code,
-            buyerEmail: emailParam || 'unknown',
-            orderId: '',
-            productType: 'grok',
-            productName: 'Grok Account',
-          });
-          releaseLockPending();
-        } catch (pendingErr) {
-          releaseLockPending();
-          console.error('[verify] Failed to save pending for unverified code:', pendingErr.message);
-        }
-        return res.status(503).json({
-          success: false, outOfStock: true, isPending: true,
-          productName: 'Grok Account', orderId: null,
-          error: 'Your order was received. Please wait — an account will be delivered to this page shortly.',
-        });
-      }
+      // STRICT: if Digiseller rejects the code for ANY reason, block it.
+      // No more "save pending for unverified codes" — that's the unknown buyer hole.
       return res.status(400).json({ success: false, error: err.message });
     }
 
-    // Email check
+    /* ── 3. Email check ────────────────────────────────────────────── */
     const buyerEmail = (platiInfo.buyer || '').toLowerCase();
     if (emailParam && buyerEmail && buyerEmail !== 'unknown') {
       if (emailParam !== buyerEmail) {
@@ -148,74 +81,93 @@ module.exports = async (req, res) => {
       }
     }
 
+    /* ── 4. Claim account atomically via CLAIMED: marker ────────── */
+    const account = await getNextAvailableAccount(SHEET_NAME, code);
+    if (!account) {
+      const pendingCheck = await findOrderByCode(code);
+      if (pendingCheck) return pendingResponse(res, pendingCheck);
 
-    /* ── ATOMIC: acquire lock → get account → delete → save → release ── */
-    const releaseLock = await acquireDeliveryLock();
-    let account;
-    try {
-      // Re-check idempotency inside lock
-      const raceCheck = await findOrderByCode(code);
-      if (raceCheck && !raceCheck.isPending) {
-        releaseLock();
-        return alreadyDeliveredResponse(res, raceCheck);
-      }
-      if (raceCheck && raceCheck.isPending) {
-        releaseLock();
-        return pendingResponse(res, raceCheck);
-      }
-
-      // Get account (passes uniqueCode for optimistic lock claim marker)
-      account = await getNextAvailableAccount(SHEET_NAME, code);
-      if (!account) {
-        // ── OUT OF STOCK: save pending order (C blank) ──
-        await savePendingOrder({
-          uniqueCode: code,
-          buyerEmail: platiInfo.buyer || emailParam || 'unknown',
-          orderId: platiInfo.orderId,
-          productType: 'grok',
-          productName: 'Grok Account',
-        });
-        releaseLock();
-        console.log(`[verify] OOS — saved pending order for code=${code}`);
-        return res.status(503).json({
-          success: false, outOfStock: true, isPending: true,
-          productName: 'Grok Account', orderId: platiInfo.orderId || null,
-          error: 'Out of stock — your order is saved. Please refresh (F5) periodically to receive your account.',
-        });
-      }
-
-      // Deliver atomically — delete row + save order inside lock
-      await deleteAccountRow(SHEET_NAME, account.rowIndex, account.claimMark);
-      await saveOrder({
+      await savePendingOrder({
         uniqueCode: code,
         buyerEmail: platiInfo.buyer || emailParam || 'unknown',
-        accountEmail: account.email,
-        accountPassword: account.password,
         orderId: platiInfo.orderId,
         productType: 'grok',
         productName: 'Grok Account',
       });
-
-      releaseLock();
-    } catch (lockErr) {
-      releaseLock();
-      throw lockErr;
+      console.log(`[verify] OOS — saved pending order for code=${code}`);
+      return res.status(503).json({
+        success: false, outOfStock: true, isPending: true,
+        productName: 'Grok Account', orderId: platiInfo.orderId || null,
+        error: 'Out of stock — your order is saved. Please refresh (F5) periodically to receive your account.',
+      });
     }
+
+    /* ── 5. Double-check Orders BEFORE saving (cross-instance race) ── */
+    const raceCheck = await findOrderByCode(code);
+    if (raceCheck && !raceCheck.isPending) {
+      console.warn(`[verify] Race detected for code=${code} — releasing claimed account`);
+      try { await revertClaimedRow(SHEET_NAME, account.rowIndex, account.email, account.password); }
+      catch (e) { console.warn('[verify] Could not revert:', e.message); }
+      return alreadyDeliveredResponse(res, raceCheck);
+    }
+
+    /* ── 6. Delete claimed row + save order ──────────────────────── */
+    const claimMark = `CLAIMED:${code}`;
+    await deleteAccountRow(SHEET_NAME, account.rowIndex, claimMark);
+    await saveOrder({
+      uniqueCode: code,
+      buyerEmail: platiInfo.buyer || emailParam || 'unknown',
+      accountEmail: account.email,
+      accountPassword: account.password,
+      orderId: platiInfo.orderId,
+      productType: 'grok',
+      productName: 'Grok Account',
+    });
+
+    /* ── 7. Post-save duplicate detection ────────────────────────── */
+    try {
+      const allOrders = await findAllOrdersByCode(code);
+      if (allOrders.length > 1) {
+        console.warn(`[verify] DUPLICATE: ${allOrders.length} orders for code=${code}. Cleaning...`);
+        for (let i = 1; i < allOrders.length; i++) {
+          await deleteOrderRow(allOrders[i].rowIndex);
+        }
+      }
+    } catch (e) { console.warn('[verify] Dedup error:', e.message); }
 
     return res.status(200).json({
       success: true,
       alreadyDelivered: false,
       account: { email: account.email, password: account.password },
       order: {
-        uniqueCode: code, buyerEmail: platiInfo.buyer || emailParam || 'unknown',
-        soldAt: new Date().toISOString(), productType: 'grok',
-        productName: 'Grok Account', orderId: platiInfo.orderId,
+        uniqueCode: code,
+        buyerEmail: platiInfo.buyer || emailParam || 'unknown',
+        soldAt: new Date().toISOString(),
+        productType: 'grok',
+        productName: 'Grok Account',
+        orderId: platiInfo.orderId,
       },
     });
   } catch (err) {
     console.error('[verify] Error:', err.message);
     return res.status(500).json({ success: false, error: 'Server error. Please try again.' });
-  } finally {
-    _pending.delete(code);
   }
 };
+
+/* Helper: revert a CLAIMED row */
+async function revertClaimedRow(sheetName, rowIndex, email, password) {
+  const { google } = require('googleapis');
+  let credentials;
+  try { credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT || '{}'); }
+  catch { return; }
+  const auth = new google.auth.GoogleAuth({
+    credentials, scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  });
+  const sheets = google.sheets({ version: 'v4', auth });
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID,
+    range: `'${sheetName}'!A${rowIndex}`,
+    valueInputOption: 'RAW',
+    requestBody: { values: [[`${email}:${password}`]] },
+  });
+}
