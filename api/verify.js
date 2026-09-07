@@ -106,14 +106,15 @@ module.exports = async (req, res) => {
     const raceCheck = await findOrderByCode(code);
     if (raceCheck && !raceCheck.isPending) {
       console.warn(`[verify] Race detected for code=${code} — releasing claimed account`);
-      try { await revertClaimedRow(SHEET_NAME, account.rowIndex, account.email, account.password); }
-      catch (e) { console.warn('[verify] Could not revert:', e.message); }
+      try {
+        // Use claimMark-based delete to revert (grok sheets returns claimMark, not rowIndex)
+        await deleteAccountRow(SHEET_NAME, null, account.claimMark);
+      } catch (e) { console.warn('[verify] Could not revert:', e.message); }
       return alreadyDeliveredResponse(res, raceCheck);
     }
 
     /* ── 6. Delete claimed row + save order ──────────────────────── */
-    const claimMark = `CLAIMED:${code}`;
-    await deleteAccountRow(SHEET_NAME, account.rowIndex, claimMark);
+    await deleteAccountRow(SHEET_NAME, null, account.claimMark);
     await saveOrder({
       uniqueCode: code,
       buyerEmail: platiInfo.buyer || emailParam || 'unknown',
@@ -153,21 +154,3 @@ module.exports = async (req, res) => {
     return res.status(500).json({ success: false, error: 'Server error. Please try again.' });
   }
 };
-
-/* Helper: revert a CLAIMED row */
-async function revertClaimedRow(sheetName, rowIndex, email, password) {
-  const { google } = require('googleapis');
-  let credentials;
-  try { credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT || '{}'); }
-  catch { return; }
-  const auth = new google.auth.GoogleAuth({
-    credentials, scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  });
-  const sheets = google.sheets({ version: 'v4', auth });
-  await sheets.spreadsheets.values.update({
-    spreadsheetId: process.env.GOOGLE_SPREADSHEET_ID,
-    range: `'${sheetName}'!A${rowIndex}`,
-    valueInputOption: 'RAW',
-    requestBody: { values: [[`${email}:${password}`]] },
-  });
-}
