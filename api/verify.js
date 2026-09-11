@@ -8,7 +8,7 @@ const { verifyUniqueCode } = require('../lib/plati');
 const {
   getNextAvailableAccount, deleteAccountRow, saveOrder,
   savePendingOrder, findOrderByCode, findAllOrdersByCode,
-  deleteOrderRow, SHEET_NAME,
+  deleteOrderRow, isAccountAlreadyDelivered, SHEET_NAME,
 } = require('../lib/sheets');
 
 function alreadyDeliveredResponse(res, order) {
@@ -107,10 +107,21 @@ module.exports = async (req, res) => {
     if (raceCheck && !raceCheck.isPending) {
       console.warn(`[verify] Race detected for code=${code} — releasing claimed account`);
       try {
-        // Use claimMark-based delete to revert (grok sheets returns claimMark, not rowIndex)
         await deleteAccountRow(SHEET_NAME, null, account.claimMark);
       } catch (e) { console.warn('[verify] Could not revert:', e.message); }
       return alreadyDeliveredResponse(res, raceCheck);
+    }
+
+    /* ── 5b. FRESH duplicate account check (prevent same account → 2 buyers) ── */
+    const accountDup = await isAccountAlreadyDelivered(account.email, account.password);
+    if (accountDup) {
+      console.warn(`[verify] DUPLICATE ACCOUNT BLOCKED: ${account.email} already delivered to another buyer. Reverting claim for code=${code}`);
+      // Don't deliver — revert the claim so account row is cleaned up
+      // The claimed row will be auto-reverted by cleanupClaimedRows from Column B backup
+      return res.status(500).json({
+        success: false,
+        error: 'Server error — account conflict detected. Please try again.',
+      });
     }
 
     /* ── 6. Delete claimed row + save order ──────────────────────── */
