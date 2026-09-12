@@ -73,6 +73,17 @@ module.exports = async (req, res) => {
       return res.status(400).json({ success: false, error: err.message });
     }
 
+    /* ── 2b. Block old orders (> 7 days) — prevents reuse of old unique codes ── */
+    const MAX_ORDER_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+    const orderDate = new Date(platiInfo.datePay).getTime();
+    if (!isNaN(orderDate) && Date.now() - orderDate > MAX_ORDER_AGE_MS) {
+      console.warn(`[verify] BLOCKED old order: code=${code} datePay=${platiInfo.datePay} buyer=${platiInfo.buyer}`);
+      return res.status(400).json({
+        success: false,
+        error: 'This order has expired. Delivery is only available within 7 days of purchase. / Срок заказа истёк.',
+      });
+    }
+
     /* ── 3. Email check ────────────────────────────────────────────── */
     const buyerEmail = (platiInfo.buyer || '').toLowerCase();
     if (emailParam && buyerEmail && buyerEmail !== 'unknown') {
