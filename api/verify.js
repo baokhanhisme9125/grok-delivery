@@ -73,14 +73,14 @@ module.exports = async (req, res) => {
       return res.status(400).json({ success: false, error: err.message });
     }
 
-    /* ── 2b. Block old orders (> 7 days) — prevents reuse of old unique codes ── */
-    const MAX_ORDER_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+    /* ── 2b. Block orders from before the bot was created (27/08/2026) ── */
+    const CUTOFF_DATE = new Date('2026-08-27T00:00:00Z').getTime();
     const orderDate = new Date(platiInfo.datePay).getTime();
-    if (!isNaN(orderDate) && Date.now() - orderDate > MAX_ORDER_AGE_MS) {
+    if (!isNaN(orderDate) && orderDate < CUTOFF_DATE) {
       console.warn(`[verify] BLOCKED old order: code=${code} datePay=${platiInfo.datePay} buyer=${platiInfo.buyer}`);
       return res.status(400).json({
         success: false,
-        error: 'This order has expired. Delivery is only available within 7 days of purchase. / Срок заказа истёк.',
+        error: 'This order has expired. Delivery is no longer available. / Срок заказа истёк. Доставка больше недоступна.',
       });
     }
 
