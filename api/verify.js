@@ -36,6 +36,7 @@ function pendingResponse(res, order) {
 module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('X-API-Version', 'v2026-09-13a');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   let code       = (req.query.uniquecode || '').trim();
@@ -47,7 +48,7 @@ module.exports = async (req, res) => {
   }
 
   if (!code || code.length < 5) {
-    return res.status(400).json({ success: false, error: 'Missing or invalid unique code.' });
+    return res.status(400).json({ success: false, error: 'Missing or invalid unique code.', _v: 'v2026-09-13a' });
   }
 
   try {
@@ -76,8 +77,9 @@ module.exports = async (req, res) => {
     /* ── 2b. Block orders from before the bot was created (27/08/2026) ── */
     const CUTOFF_DATE = new Date('2026-08-27T00:00:00Z').getTime();
     const orderDate = new Date(platiInfo.datePay).getTime();
-    if (!isNaN(orderDate) && orderDate < CUTOFF_DATE) {
-      console.warn(`[verify] BLOCKED old order: code=${code} datePay=${platiInfo.datePay} buyer=${platiInfo.buyer}`);
+    console.log(`[verify] datePay=${platiInfo.datePay} orderDate=${orderDate} cutoff=${CUTOFF_DATE}`);
+    if (isNaN(orderDate) || orderDate < CUTOFF_DATE) {
+      console.warn(`[verify] BLOCKED: code=${code} datePay=${platiInfo.datePay} buyer=${platiInfo.buyer} — before cutoff or no date`);
       return res.status(400).json({
         success: false,
         error: 'This order has expired. Delivery is no longer available. / Срок заказа истёк. Доставка больше недоступна.',
