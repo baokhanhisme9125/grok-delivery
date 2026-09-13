@@ -76,10 +76,25 @@ module.exports = async (req, res) => {
 
     /* ── 2b. Block orders from before the bot was created (27/08/2026) ── */
     const CUTOFF_DATE = new Date('2026-08-27T00:00:00Z').getTime();
-    const orderDate = new Date(platiInfo.datePay).getTime();
+    // Digiseller may return date as "17.08.2026 17:29:21" (DD.MM.YYYY) or ISO string
+    function parseDigiDate(str) {
+      if (!str) return NaN;
+      // Try native parse first (handles ISO format)
+      const d1 = new Date(str).getTime();
+      if (!isNaN(d1)) return d1;
+      // Try DD.MM.YYYY HH:MM:SS format
+      const m = str.match(/^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):(\d{2})$/);
+      if (m) return new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]}:${m[5]}:${m[6]}Z`).getTime();
+      // Try DD.MM.YYYY
+      const m2 = str.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+      if (m2) return new Date(`${m2[3]}-${m2[2]}-${m2[1]}T00:00:00Z`).getTime();
+      return NaN;
+    }
+    const orderDate = parseDigiDate(platiInfo.datePay);
     console.log(`[verify] datePay=${platiInfo.datePay} orderDate=${orderDate} cutoff=${CUTOFF_DATE}`);
-    if (isNaN(orderDate) || orderDate < CUTOFF_DATE) {
-      console.warn(`[verify] BLOCKED: code=${code} datePay=${platiInfo.datePay} buyer=${platiInfo.buyer} — before cutoff or no date`);
+    // Only block if we can CONFIRM the date is before cutoff. Unknown date → allow through.
+    if (!isNaN(orderDate) && orderDate < CUTOFF_DATE) {
+      console.warn(`[verify] BLOCKED old order: code=${code} datePay=${platiInfo.datePay} buyer=${platiInfo.buyer}`);
       return res.status(400).json({
         success: false,
         error: 'This order has expired. Delivery is no longer available. / Срок заказа истёк. Доставка больше недоступна.',
