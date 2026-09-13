@@ -75,7 +75,7 @@ module.exports = async (req, res) => {
     }
 
     /* ── 2b. Block orders from before the bot was created (27/08/2026) ── */
-    const CUTOFF_DATE = new Date('2026-08-27T00:00:00Z').getTime();
+    const CUTOFF_DATE = new Date('2026-09-01T00:00:00Z').getTime();
     // Digiseller may return date as "17.08.2026 17:29:21" (DD.MM.YYYY) or ISO string
     function parseDigiDate(str) {
       if (!str) return NaN;
