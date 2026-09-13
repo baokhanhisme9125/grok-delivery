@@ -143,9 +143,11 @@ module.exports = async (req, res) => {
     /* ── 5b. FRESH duplicate account check (prevent same account → 2 buyers) ── */
     const accountDup = await isAccountAlreadyDelivered(account.email, account.password);
     if (accountDup) {
-      console.warn(`[verify] DUPLICATE ACCOUNT BLOCKED: ${account.email} already delivered to another buyer. Reverting claim for code=${code}`);
-      // Don't deliver — revert the claim so account row is cleaned up
-      // The claimed row will be auto-reverted by cleanupClaimedRows from Column B backup
+      console.warn(`[verify] DUPLICATE ACCOUNT BLOCKED: ${account.email} already delivered. Reverting claim for code=${code}`);
+      // Immediately revert the CLAIMED marker — don't wait for cleanupClaimedRows
+      try {
+        await deleteAccountRow(SHEET_NAME, null, account.claimMark);
+      } catch (e) { console.warn('[verify] Could not revert duplicate claim:', e.message); }
       return res.status(500).json({
         success: false,
         error: 'Server error — account conflict detected. Please try again.',
