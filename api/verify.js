@@ -6,7 +6,7 @@
  */
 const { verifyUniqueCode } = require('../lib/plati');
 const {
-  getNextAvailableAccount, deleteAccountRow, saveOrder,
+  getNextAvailableAccount, deleteAccountRow, revertClaimedRow, saveOrder,
   savePendingOrder, findOrderByCode, findAllOrdersByCode,
   deleteOrderRow, isAccountAlreadyDelivered, SHEET_NAME,
 } = require('../lib/sheets');
@@ -133,10 +133,10 @@ module.exports = async (req, res) => {
     /* ── 5. Double-check Orders BEFORE saving (cross-instance race) ── */
     const raceCheck = await findOrderByCode(code);
     if (raceCheck && !raceCheck.isPending) {
-      console.warn(`[verify] Race detected for code=${code} — releasing claimed account`);
+      console.warn(`[verify] Race detected for code=${code} — reverting claimed account`);
       try {
-        await deleteAccountRow(SHEET_NAME, null, account.claimMark);
-      } catch (e) { console.warn('[verify] Could not revert:', e.message); }
+        await revertClaimedRow(SHEET_NAME, account.claimMark); // REVERT not DELETE
+      } catch (e) { console.warn('[verify] Could not revert race claim:', e.message); }
       return alreadyDeliveredResponse(res, raceCheck);
     }
 
@@ -144,9 +144,8 @@ module.exports = async (req, res) => {
     const accountDup = await isAccountAlreadyDelivered(account.email, account.password);
     if (accountDup) {
       console.warn(`[verify] DUPLICATE ACCOUNT BLOCKED: ${account.email} already delivered. Reverting claim for code=${code}`);
-      // Immediately revert the CLAIMED marker — don't wait for cleanupClaimedRows
       try {
-        await deleteAccountRow(SHEET_NAME, null, account.claimMark);
+        await revertClaimedRow(SHEET_NAME, account.claimMark); // REVERT not DELETE — keep account in stock
       } catch (e) { console.warn('[verify] Could not revert duplicate claim:', e.message); }
       return res.status(500).json({
         success: false,
