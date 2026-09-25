@@ -8,7 +8,7 @@ const { verifyUniqueCode } = require('../lib/plati');
 const {
   getNextAvailableAccount, deleteAccountRow, revertClaimedRow, saveOrder,
   savePendingOrder, findOrderByCode, findAllOrdersByCode,
-  deleteOrderRow, isAccountAlreadyDelivered, SHEET_NAME,
+  deleteOrderRow, isAccountAlreadyDelivered, findCompletedOrderByOrderId, SHEET_NAME,
 } = require('../lib/sheets');
 
 function alreadyDeliveredResponse(res, order) {
@@ -110,6 +110,15 @@ module.exports = async (req, res) => {
     if (emailParam && buyerEmail && buyerEmail !== 'unknown') {
       if (emailParam !== buyerEmail) {
         return res.status(403).json({ success: false, error: 'Email does not match. / Email не совпадает.' });
+      }
+    }
+
+    /* ── 3b. OrderId dedup — same Digiseller order already delivered with different code? ── */
+    if (platiInfo.orderId && !hasPendingOrder) {
+      const existingByOrderId = await findCompletedOrderByOrderId(platiInfo.orderId);
+      if (existingByOrderId && existingByOrderId.uniqueCode !== code) {
+        console.warn(`[verify] OrderId ${platiInfo.orderId} already delivered (code=${existingByOrderId.uniqueCode}), blocking duplicate code=${code}`);
+        return alreadyDeliveredResponse(res, existingByOrderId);
       }
     }
 
