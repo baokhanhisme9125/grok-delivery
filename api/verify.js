@@ -80,18 +80,19 @@ module.exports = async (req, res) => {
 
     /* ── 2b. Block orders from before the bot was created (27/08/2026) ── */
     const CUTOFF_DATE = new Date('2026-09-01T00:00:00Z').getTime();
-    // Digiseller may return date as "17.08.2026 17:29:21" (DD.MM.YYYY) or ISO string
+    // Digiseller may return date as "01.10.2026 2:22:31" (DD.MM.YYYY, single-digit hour!) or ISO string
     function parseDigiDate(str) {
       if (!str) return NaN;
-      // Try native parse first (handles ISO format)
+      const pad = n => String(n).padStart(2, '0');
+      // Try DD.MM.YYYY HH:MM:SS first (with 1 or 2 digit time parts)
+      const m = str.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})\s+(\d{1,2}):(\d{1,2}):(\d{1,2})$/);
+      if (m) return new Date(`${m[3]}-${pad(m[2])}-${pad(m[1])}T${pad(m[4])}:${pad(m[5])}:${pad(m[6])}Z`).getTime();
+      // Try DD.MM.YYYY (no time)
+      const m2 = str.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+      if (m2) return new Date(`${m2[3]}-${pad(m2[2])}-${pad(m2[1])}T00:00:00Z`).getTime();
+      // Fallback: native parse (handles ISO 8601 strings like "2026-10-01T02:22:31Z")
       const d1 = new Date(str).getTime();
       if (!isNaN(d1)) return d1;
-      // Try DD.MM.YYYY HH:MM:SS format
-      const m = str.match(/^(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2}):(\d{2}):(\d{2})$/);
-      if (m) return new Date(`${m[3]}-${m[2]}-${m[1]}T${m[4]}:${m[5]}:${m[6]}Z`).getTime();
-      // Try DD.MM.YYYY
-      const m2 = str.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
-      if (m2) return new Date(`${m2[3]}-${m2[2]}-${m2[1]}T00:00:00Z`).getTime();
       return NaN;
     }
     const orderDate = parseDigiDate(platiInfo.datePay);
