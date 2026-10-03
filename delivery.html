@@ -514,8 +514,21 @@ async function load(){
   try{
     let url=`/api/verify?uniquecode=${encodeURIComponent(code)}`;
     if(email)url+=`&email=${encodeURIComponent(email)}`;
-    const res=await fetch(url);
-    const data=await res.json();
+    let data=null, lastErr=null;
+    for(let attempt=1; attempt<=4 && !data; attempt++){
+      try{
+        const ctrl=new AbortController();
+        const to=setTimeout(()=>ctrl.abort(),65000);
+        const res=await fetch(url,{signal:ctrl.signal,cache:'no-store'});
+        clearTimeout(to);
+        const txt=await res.text();
+        try{ data=JSON.parse(txt); }catch(pe){ throw new Error('Non-JSON response ('+res.status+')'); }
+      }catch(fe){
+        lastErr=fe;
+        if(attempt<4) await new Promise(r=>setTimeout(r,1500*attempt));
+      }
+    }
+    if(!data) throw lastErr||new Error('No response');
     if(!data.success){
       if(data.outOfStock){
         document.getElementById('oos-product').textContent=data.productName||'';
