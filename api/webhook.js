@@ -65,10 +65,17 @@ module.exports = async (req, res) => {
   const idGoods  = process.env.PLATI_GOODS_ID   || '';
   const secret   = process.env.PLATI_SECRET_KEY || '';
 
+  // SECURITY: without a secret the signature only uses public values (seller id, product id)
+  // and can be forged by anyone → refuse instead of handing out accounts.
+  if (!secret) {
+    console.error('[webhook-grok] PLATI_SECRET_KEY not configured — webhook disabled');
+    return res.status(503).json({ success: false, error: 'Webhook disabled' });
+  }
+
   const expectedSign = generateSign(idSeller, id_goods || idGoods, unique_code, secret);
 
   if (!sign || sign.toLowerCase() !== expectedSign.toLowerCase()) {
-    console.error('[webhook-grok] Invalid sign. Got:', sign, 'Expected:', expectedSign);
+    console.error('[webhook-grok] Invalid sign for code:', unique_code);
     return res.status(403).json({ success: false, error: 'Invalid signature' });
   }
 
